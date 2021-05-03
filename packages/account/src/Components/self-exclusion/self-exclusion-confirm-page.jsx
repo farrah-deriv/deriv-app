@@ -12,10 +12,6 @@ const SelfExclusionConfirmPage = () => {
     );
     const { isSubmitting, values } = useFormikContext();
 
-    if (state.show_confirm) {
-        return <SelfExclusionConfirmLimits />;
-    }
-
     return (
         <React.Fragment>
             <div onClick={backFromConfirmLimits} className='da-self-exclusion__back'>
