@@ -254,6 +254,10 @@
         align-self: center;
         @include mobile {
             font-size: var(--text-size-xxs);
+
+            &-by-name {
+                flex: 1;
+            }
         }
     }
     &__text {
@@ -839,6 +843,10 @@
         padding-left: 1.6rem !important;
         margin-bottom: 0 !important;
         flex: 1;
+
+        @include mobile {
+            max-width: 72vw;
+        }
     }
     &__filter {
         min-width: 22.8rem;
