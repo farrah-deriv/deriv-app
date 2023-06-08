@@ -21,7 +21,7 @@ type TMobileFullPageModal = {
     page_header_className?: string;
     page_header_text?: string;
     renderPageHeaderTrailingIcon?: () => React.ReactNode;
-    renderPageHeaderText?: () => string;
+    renderPageHeaderText?: () => string | React.ReactNode;
     should_header_stick_body?: boolean;
     body_className?: string;
     is_popup?: boolean;
@@ -80,7 +80,12 @@ const MobileFullPageModal = ({
                     >
                         {pageHeaderReturnFn && (
                             <div className='dc-mobile-full-page-modal__header-return'>
-                                <Icon icon='IcArrowLeftBold' onClick={pageHeaderReturnFn} size={16} />
+                                <Icon
+                                    data_testid='dt_mobile_full_page_modal_return_header'
+                                    icon='IcArrowLeftBold'
+                                    onClick={pageHeaderReturnFn}
+                                    size={16}
+                                />
                             </div>
                         )}
                         {renderPageHeader && renderPageHeader()}

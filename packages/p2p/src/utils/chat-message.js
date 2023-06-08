@@ -38,3 +38,24 @@ export const convertFromChannelMessage = channel_message => {
         url: channel_message.url,
     });
 };
+
+export const handleCtrlEnterKeyPressed = event => {
+    const { value, selectionStart, selectionEnd } = event.target;
+
+    if (typeof selectionStart === 'number' && typeof selectionEnd === 'number') {
+        event.target.value = `${value.slice(0, selectionStart)}\n${value.slice(selectionEnd)}`;
+    } else if (window.getSelection) {
+        const selection = window.getSelection();
+        if (selection && selection.rangeCount > 0) {
+            event.target.focus();
+            const range = selection.getRangeAt(0);
+            const break_line_node = document.createTextNode('\r\n');
+            range.insertNode(break_line_node);
+            range.collapse(false);
+            selection.removeAllRanges();
+            selection.addRange(range);
+        }
+    }
+};
+
+export const isImageType = type => ['image/jpeg', 'image/png', 'image/gif'].includes(type);

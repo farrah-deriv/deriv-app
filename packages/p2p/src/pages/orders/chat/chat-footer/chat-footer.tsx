@@ -2,18 +2,19 @@ import React from 'react';
 import classNames from 'classnames';
 import { Input, Text } from '@deriv/components';
 import { isMobile } from '@deriv/shared';
-import PropTypes from 'prop-types';
 import { observer } from 'mobx-react-lite';
 import { localize, Localize } from 'Components/i18next';
-import ChatFooterIcon from 'Pages/orders/chat/chat-footer-icon.jsx';
 import { useStores } from 'Stores';
-import ChatMessage from 'Utils/chat-message';
-import './chat-footer.scss';
+import { handleCtrlEnterKeyPressed } from 'Utils/chat-message';
+import ChatFooterIcon from './chat-footer-icon';
+
+type TElement = HTMLInputElement | HTMLTextAreaElement;
+type TChangeEvent = React.ChangeEvent<TElement> | { target: TElement };
 
 const ChatFooter = observer(() => {
     const { order_store, sendbird_store } = useStores();
-    const file_input_ref = React.useRef(null);
-    const text_input_ref = React.useRef(null);
+    const file_input_ref = React.useRef<null | TElement>(null);
+    const text_input_ref = React.useRef<null | TElement>(null);
     const [character_count, setCharacterCount] = React.useState(0);
 
     const updateTextAreaBounds = () => {
@@ -25,31 +26,15 @@ const ChatFooter = observer(() => {
         }
     };
 
-    const handleChange = event => {
+    const handleChange = (event: TChangeEvent) => {
         setCharacterCount(event.target.value.length);
         updateTextAreaBounds();
     };
 
-    const handleKeyDown = event => {
+    const handleKeyDown = (event: React.KeyboardEvent<TElement>) => {
         if (event.key === 'Enter' && !isMobile()) {
             if (event.ctrlKey || event.metaKey) {
-                const { target: element } = event;
-                const { value } = element;
-
-                if (typeof element.selectionStart === 'number' && typeof element.selectionEnd === 'number') {
-                    event.target.value = `${value.slice(0, element.selectionStart)}\n${value.slice(
-                        element.selectionEnd
-                    )}`;
-                } else if (document.selection?.createRange) {
-                    element.focus();
-
-                    const range = document.selection.createRange();
-
-                    range.text = '\r\n';
-                    range.collapse(false);
-                    range.select();
-                }
-
+                handleCtrlEnterKeyPressed(event);
                 updateTextAreaBounds();
             } else {
                 event.preventDefault();
@@ -110,7 +95,7 @@ const ChatFooter = observer(() => {
                             <div
                                 className='chat-footer-icon-container'
                                 onClick={
-                                    should_show_attachment_icon ? () => file_input_ref.current.click() : sendMessage
+                                    should_show_attachment_icon ? () => file_input_ref.current?.click() : sendMessage
                                 }
                             >
                                 <ChatFooterIcon should_show_attachment_icon={should_show_attachment_icon} />
@@ -119,10 +104,11 @@ const ChatFooter = observer(() => {
                         type='textarea'
                     />
                     <input
-                        onChange={e => sendbird_store.sendFile(e.target.files[0])}
+                        onChange={e => sendbird_store.sendFile(e.target.files?.[0])}
                         ref={el => (file_input_ref.current = el)}
                         style={{ display: 'none' }}
                         type='file'
+                        data-testid='dt_file_input'
                     />
                 </div>
             </div>
@@ -131,10 +117,5 @@ const ChatFooter = observer(() => {
 });
 
 ChatFooter.displayName = 'ChatFooter';
-ChatFooter.propTypes = {
-    chat_messages: PropTypes.arrayOf(PropTypes.instanceOf(ChatMessage)),
-    sendMessage: PropTypes.bool,
-    sendFile: PropTypes.bool,
-};
 
 export default ChatFooter;

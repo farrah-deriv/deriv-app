@@ -40,6 +40,10 @@ export type TInputProps = {
     warn?: string;
 };
 
+export type TTextAreaProps = {
+    rows?: number;
+};
+
 type TInputWrapper = {
     has_footer: boolean;
 };
@@ -47,7 +51,7 @@ type TInputWrapper = {
 const InputWrapper = ({ children, has_footer }: React.PropsWithChildren<TInputWrapper>) =>
     has_footer ? <div className='dc-input__wrapper'>{children}</div> : <React.Fragment>{children}</React.Fragment>;
 
-const Input = React.forwardRef<HTMLInputElement & HTMLTextAreaElement, TInputProps>(
+const Input = React.forwardRef<HTMLInputElement & HTMLTextAreaElement, TInputProps & TTextAreaProps>(
     (
         {
             bottom_label,
