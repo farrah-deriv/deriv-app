@@ -199,8 +199,8 @@ jest.mock('Stores', () => ({
     })),
 }));
 
-jest.mock('React', () => ({
-    ...jest.requireActual('React'),
+jest.mock('react', () => ({
+    ...jest.requireActual('react'),
     useRef: jest.fn(() => ({
         current: {
             scrollTop: 0,
