@@ -1,24 +1,25 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import ChatWrapper from '../chat-wrapper';
 import { isDesktop, isMobile } from '@deriv/shared';
+import { useStores } from 'Stores';
+import ChatWrapper from '../chat-wrapper';
 
-const mock_order_store = {
-    order_information: {
-        other_user_details: {
-            name: 'Test user',
+const mock_store = {
+    order_store: {
+        order_information: {
+            other_user_details: {
+                name: 'Test user',
+            },
         },
+    },
+    sendbird_store: {
+        last_other_user_activity: 'Last seen 1 hour ago',
     },
 };
 
 jest.mock('Stores', () => ({
     ...jest.requireActual('Stores'),
-    useStores: jest.fn(() => ({
-        order_store: mock_order_store,
-        sendbird_store: {
-            last_other_user_activity: 'Last seen 1 hour ago',
-        },
-    })),
+    useStores: jest.fn((): DeepPartial<ReturnType<typeof useStores>> => mock_store),
 }));
 
 jest.mock('@deriv/shared', () => ({
