@@ -2,7 +2,7 @@ import React from 'react';
 import { Icon } from '@deriv/components';
 
 type TChatFooterIcon = {
-    should_show_attachment_icon: boolean;
+    should_show_attachment_icon?: boolean;
 };
 
 const ChatFooterIcon = React.memo(({ should_show_attachment_icon }: TChatFooterIcon) => (

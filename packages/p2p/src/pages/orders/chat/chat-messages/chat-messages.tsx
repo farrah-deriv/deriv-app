@@ -37,7 +37,7 @@ const ChatMessages = observer(() => {
                 autohide
                 className='chat-messages'
                 height='unset'
-                refSetter={scroll_ref ?? undefined}
+                refSetter={scroll_ref}
                 onScroll={event => sendbird_store.onMessagesScroll(event)}
             >
                 {sendbird_store.chat_messages.map((chat_message: ChatMessage) => {
