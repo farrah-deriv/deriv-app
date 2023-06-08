@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button, Loading, Text } from '@deriv/components';
-import { observer } from 'mobx-react-lite';
+import { observer } from '@deriv/stores';
 import { Localize, localize } from 'Components/i18next';
 import ChatHeader from 'Pages/orders/chat/chat-header';
 import ChatMessages from 'Pages/orders/chat/chat-messages';

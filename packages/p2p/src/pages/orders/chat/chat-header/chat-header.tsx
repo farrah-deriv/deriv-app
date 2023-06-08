@@ -1,7 +1,7 @@
 import React from 'react';
 import { DesktopWrapper, Text } from '@deriv/components';
 import { isMobile } from '@deriv/shared';
-import { observer } from 'mobx-react-lite';
+import { observer } from '@deriv/stores';
 import { useStores } from 'Stores';
 import { generateHexColourFromNickname, getShortNickname } from 'Utils/string';
 

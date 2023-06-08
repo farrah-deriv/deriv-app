@@ -1,6 +1,6 @@
 import React from 'react';
 import { DesktopWrapper, MobileFullPageModal, MobileWrapper } from '@deriv/components';
-import { observer } from 'mobx-react-lite';
+import { observer } from '@deriv/stores';
 import ChatHeader from './chat-header';
 
 type TChatWrapper = {

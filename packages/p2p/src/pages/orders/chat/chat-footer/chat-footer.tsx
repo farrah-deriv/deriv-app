@@ -2,7 +2,7 @@ import React from 'react';
 import classNames from 'classnames';
 import { Input, Text } from '@deriv/components';
 import { isMobile } from '@deriv/shared';
-import { observer } from 'mobx-react-lite';
+import { observer } from '@deriv/stores';
 import { localize, Localize } from 'Components/i18next';
 import { useStores } from 'Stores';
 import { handleCtrlEnterKeyPressed } from 'Utils/chat-message';

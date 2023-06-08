@@ -2,7 +2,7 @@ import React from 'react';
 import classNames from 'classnames';
 import { Text, ThemedScrollbars } from '@deriv/components';
 import { formatMilliseconds } from '@deriv/shared';
-import { observer } from 'mobx-react-lite';
+import { observer } from '@deriv/stores';
 import { useStores } from 'Stores';
 import ChatMessage, { isImageType } from 'Utils/chat-message';
 import ChatMessageReceipt from './chat-message-receipt';
