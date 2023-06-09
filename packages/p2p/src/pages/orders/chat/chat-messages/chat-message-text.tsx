@@ -3,7 +3,7 @@ import { Text } from '@deriv/components';
 import './chat-message-text.scss';
 
 type TChatMessageText = {
-    color: string;
+    color?: string;
 };
 
 const ChatMessageText = React.memo(({ children, color }: React.PropsWithChildren<TChatMessageText>) => (

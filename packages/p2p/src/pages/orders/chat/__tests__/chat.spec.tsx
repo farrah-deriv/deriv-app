@@ -71,14 +71,14 @@ describe('<Chat />', () => {
         expect(screen.getByTestId('dt_chat_loading')).toBeInTheDocument();
     });
 
-    it('should render one Chat components with  the info given', () => {
+    it('should render the Chat component with  the info given', () => {
         render(<Chat />);
         expect(screen.getByTestId('dt_chat_loaded')).toBeInTheDocument();
         expect(screen.getByText('Test user')).toBeInTheDocument();
         expect(screen.getByText('test message')).toBeInTheDocument();
     });
 
-    it('should render Chat components in mobile view', () => {
+    it('should render Chat component in mobile view', () => {
         (isMobile as jest.Mock).mockImplementationOnce(() => true);
         (isDesktop as jest.Mock).mockImplementationOnce(() => false);
         (useStores as jest.Mock).mockImplementationOnce(() => ({

@@ -31,7 +31,7 @@ jest.mock('@deriv/shared', () => ({
 const mockedMobileReturnFunc = jest.fn();
 
 describe('<ChatWrapper />', () => {
-    it('should render one <ChatWrapper /> component in desktop view', () => {
+    it('should render ChatWrapper component in desktop view', () => {
         render(
             <ChatWrapper is_modal_open={false} mobile_return_func={mockedMobileReturnFunc}>
                 test
@@ -40,7 +40,7 @@ describe('<ChatWrapper />', () => {
         expect(screen.getByText('test')).toBeInTheDocument();
     });
 
-    it('should render one <ChatWrapper /> component in mobile view', () => {
+    it('should render ChatWrapper component in mobile view', () => {
         (isMobile as jest.Mock).mockReturnValueOnce(true);
         (isDesktop as jest.Mock).mockReturnValueOnce(false);
         render(

@@ -15,7 +15,7 @@ const ChatFooter = observer(() => {
     const { order_store, sendbird_store } = useStores();
     const file_input_ref = React.useRef<TElement | null>(null);
     const text_input_ref = React.useRef<TElement | null>(null);
-    const [character_count, setCharacterCount] = React.useState<number>(0);
+    const [character_count, setCharacterCount] = React.useState(0);
 
     const updateTextAreaBounds = () => {
         const el_target = text_input_ref.current;
