@@ -1,11 +1,20 @@
-import PropTypes from 'prop-types';
 import React from 'react';
 import { RadioGroup } from '@deriv/components';
 import { isMobile } from '@deriv/shared';
 import { localize } from 'Components/i18next';
-import 'Components/order-details/order-details-complain-modal-radio-group.scss';
+import './order-details-complain-modal-radio-group.scss';
 
-const OrderDetailsComplainModalRadioGroup = ({ dispute_reason, onCheckboxChange, is_buy_order_for_user }) => (
+type TOrderDetailsComplainModalRadioGroup = {
+    dispute_reason: string;
+    is_buy_order_for_user: boolean;
+    onCheckboxChange: (reason: string) => void;
+};
+
+const OrderDetailsComplainModalRadioGroup = ({
+    dispute_reason,
+    onCheckboxChange,
+    is_buy_order_for_user,
+}: TOrderDetailsComplainModalRadioGroup) => (
     <RadioGroup
         className='order-details-complain-modal-radio-group'
         name='reason'
@@ -15,6 +24,7 @@ const OrderDetailsComplainModalRadioGroup = ({ dispute_reason, onCheckboxChange,
         should_wrap_items={isMobile()}
     >
         <RadioGroup.Item
+            disabled={false}
             value={is_buy_order_for_user ? 'seller_not_released' : 'buyer_not_paid'}
             label={
                 is_buy_order_for_user
@@ -23,6 +33,7 @@ const OrderDetailsComplainModalRadioGroup = ({ dispute_reason, onCheckboxChange,
             }
         />
         <RadioGroup.Item
+            disabled={false}
             value='buyer_underpaid'
             label={
                 is_buy_order_for_user
@@ -31,6 +42,7 @@ const OrderDetailsComplainModalRadioGroup = ({ dispute_reason, onCheckboxChange,
             }
         />
         <RadioGroup.Item
+            disabled={false}
             value='buyer_overpaid'
             label={
                 is_buy_order_for_user
@@ -40,11 +52,5 @@ const OrderDetailsComplainModalRadioGroup = ({ dispute_reason, onCheckboxChange,
         />
     </RadioGroup>
 );
-
-OrderDetailsComplainModalRadioGroup.propTypes = {
-    dispute_reason: PropTypes.string,
-    onCheckboxChange: PropTypes.func,
-    is_buy_order_for_user: PropTypes.bool,
-};
 
 export default OrderDetailsComplainModalRadioGroup;

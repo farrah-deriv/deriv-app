@@ -2,12 +2,15 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Icon, MobileFullPageModal, ThemedScrollbars } from '@deriv/components';
 import { isMobile } from '@deriv/shared';
+import { useModalManagerContext } from 'Components/modal-manager/modal-manager-context';
 import PageReturn from 'Components/page-return';
 import { useStores } from 'Stores';
-import OrderDetailsFooter from 'Components/order-details/order-details-footer.jsx';
+import OrderDetailsFooter from './order-details-footer';
 
 const OrderDetailsWrapper = ({ children, page_title }) => {
     const { order_store, sendbird_store } = useStores();
+    const { isCurrentModal } = useModalManagerContext();
+
     return isMobile() ? (
         <div data-testid='order-details-wrapper-mobile'>
             <MobileFullPageModal
@@ -15,7 +18,7 @@ const OrderDetailsWrapper = ({ children, page_title }) => {
                 body_className='order-details__body'
                 height_offset='80px'
                 is_flex
-                is_modal_open
+                is_modal_open={!isCurrentModal('OrderDetailsComplainModal')}
                 pageHeaderReturnFn={order_store.onPageReturn}
                 page_header_text={page_title}
                 renderPageHeaderTrailingIcon={() => (

@@ -5,14 +5,14 @@ import { Button, HintBox, Icon, Text, ThemedScrollbars } from '@deriv/components
 import { formatMoney, isDesktop, isMobile } from '@deriv/shared';
 import { useStore, observer } from '@deriv/stores';
 import { Localize, localize } from 'Components/i18next';
-import { api_error_codes } from '../../constants/api-error-codes.js';
+import { api_error_codes } from 'Constants/api-error-codes.js';
 import Chat from 'Pages/orders/chat/chat.jsx';
 import StarRating from 'Components/star-rating';
 import UserRatingButton from 'Components/user-rating-button';
-import OrderDetailsFooter from 'Components/order-details/order-details-footer.jsx';
-import OrderDetailsTimer from 'Components/order-details/order-details-timer.jsx';
-import OrderInfoBlock from 'Components/order-details/order-info-block.jsx';
-import OrderDetailsWrapper from 'Components/order-details/order-details-wrapper.jsx';
+import OrderDetailsFooter from './order-details-footer.jsx';
+import OrderDetailsTimer from './order-details-timer.jsx';
+import OrderInfoBlock from './order-info-block.jsx';
+import OrderDetailsWrapper from './order-details-wrapper.jsx';
 import P2PAccordion from 'Components/p2p-accordion/p2p-accordion.jsx';
 import { useStores } from 'Stores';
 import PaymentMethodAccordionHeader from './payment-method-accordion-header.jsx';
@@ -21,7 +21,7 @@ import MyProfileSeparatorContainer from 'Pages/my-profile/my-profile-separator-c
 import { setDecimalPlaces, removeTrailingZeros, roundOffDecimal } from 'Utils/format-value';
 import { getDateAfterHours } from 'Utils/date-time';
 import { useModalManagerContext } from 'Components/modal-manager/modal-manager-context';
-import 'Components/order-details/order-details.scss';
+import './order-details.scss';
 
 const OrderDetails = observer(() => {
     const { buy_sell_store, general_store, my_profile_store, order_store, sendbird_store } = useStores();
