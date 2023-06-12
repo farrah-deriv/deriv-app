@@ -1,3 +1,5 @@
+import ChatMessage from 'Utils/chat-message';
+
 export const mock_channel = {
     cachedReadReceiptStatus: {
         test: 1,
@@ -175,3 +177,16 @@ export const mock_channel = {
     myRole: 'none',
     myMutedState: 'unmuted',
 };
+
+export const mock_message = new ChatMessage({
+    created_at: 3,
+    channel_url: 'test',
+    file_type: 'image/jpeg',
+    id: 1,
+    message: 'test message',
+    message_type: 'user',
+    name: 'test',
+    sender_user_id: 'test',
+    url: 'test',
+    status: ChatMessage.STATUS_PENDING,
+});
