@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import OrderInfoBlock from '../order-info-block.jsx';
+import OrderInfoBlock from '../order-info-block';
 
 describe('<OrderInfoBlock/>', () => {
     it('should render the component with the passed label and value', () => {

@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { localize } from 'Components/i18next';
-import UserRatingButton from 'Components/user-rating-button';
+import UserRatingButton from 'Pages/orders/user-rating-button';
 import StarRating from 'Components/star-rating';
 
 const RatingCellRenderer = ({ has_review_details, is_reviewable, rating, onClickUserRatingButton }) => {

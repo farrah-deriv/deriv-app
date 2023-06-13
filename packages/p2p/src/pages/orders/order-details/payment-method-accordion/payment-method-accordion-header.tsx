@@ -1,14 +1,25 @@
 import React from 'react';
 import { Icon, Text } from '@deriv/components';
+import { getSnakeCase } from '@deriv/components/utils/helper';
 import './payment-method-accordion-header.scss';
+import { TPaymentMethod } from 'Types';
 
-const PaymentMethodAccordionHeader = ({ payment_method }) => {
+type PaymentMethodAccordionHeader = {
+    payment_method: TPaymentMethod;
+};
+
+const PaymentMethodAccordionHeader = ({ payment_method }: PaymentMethodAccordionHeader) => {
     const method = payment_method.display_name.replace(/\s|-/gm, '');
 
     if (method === 'BankTransfer' || method === 'Other') {
         return (
             <div className='payment-method-accordion-header__row'>
-                <Icon className='payment-method-accordion-header__icon' icon={`IcCashier${method}`} size={16} />
+                <Icon
+                    className='payment-method-accordion-header__icon'
+                    icon={`IcCashier${method}`}
+                    data_testid={getSnakeCase(`IcCashier${method}`)}
+                    size={16}
+                />
                 <div className='payment-method-accordion-header__title'>
                     <Text color='prominent' size='xs'>
                         {payment_method.display_name}
@@ -25,7 +36,7 @@ const PaymentMethodAccordionHeader = ({ payment_method }) => {
 
     return (
         <div className='payment-method-accordion-header__row'>
-            <Icon icon='IcCashierEwallet' size={16} />
+            <Icon icon='IcCashierEwallet' data_testid={getSnakeCase('IcCashierEwallet')} size={16} />
             <div className='payment-method-accordion-header__column'>
                 <Text color='prominent' size='xs'>
                     {payment_method.display_name}

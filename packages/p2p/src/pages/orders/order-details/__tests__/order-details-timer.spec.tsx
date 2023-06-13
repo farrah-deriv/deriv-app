@@ -1,8 +1,7 @@
 import React from 'react';
-import { useStores } from 'Stores';
-import ServerTime from 'Utils/server-time';
 import { render, screen } from '@testing-library/react';
-import OrderDetailsTimer from '../order-details-timer.jsx';
+import ServerTime from 'Utils/server-time';
+import OrderDetailsTimer from '../order-details-timer';
 
 const mock_order_info = {
     order_expiry_milliseconds: 0,
@@ -34,21 +33,23 @@ describe('<OrderDetailsTimer/>', () => {
     });
 
     it('should not render the component when show_order_timer set to false', () => {
-        useStores.mockReturnValue({
-            order_store: {
-                order_information: { ...mock_order_info, should_show_order_timer: false },
-            },
-        });
+        mock_order_info.should_show_order_timer = false;
         render(<OrderDetailsTimer />);
 
         expect(screen.queryByText('Time left')).not.toBeInTheDocument();
     });
 
     it('should invoke clearInterval method when timer expires', () => {
-        const spiedClearIntervalFn = jest.spyOn(global, 'clearInterval');
-        ServerTime.getDistanceToServerTime.mockReturnValue(-1);
+        jest.spyOn(global, 'clearInterval');
+        jest.spyOn(React, 'useRef').mockReturnValue({
+            current: {
+                childMethod: jest.fn(),
+            },
+        });
+
+        (ServerTime.getDistanceToServerTime as jest.Mock).mockReturnValue(-1);
         render(<OrderDetailsTimer />);
 
-        expect(spiedClearIntervalFn).toHaveBeenCalled();
+        expect(clearInterval).toHaveBeenCalled();
     });
 });

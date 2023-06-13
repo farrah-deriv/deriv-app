@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { Button, Text } from '@deriv/components';
 import { observer } from 'mobx-react-lite';
 import { Localize } from 'Components/i18next';
@@ -124,9 +123,5 @@ const OrderDetailsFooter = observer(() => {
 
     return null;
 });
-
-OrderDetailsFooter.propTypes = {
-    order_information: PropTypes.object,
-};
 
 export default OrderDetailsFooter;

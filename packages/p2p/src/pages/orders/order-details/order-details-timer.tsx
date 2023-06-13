@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { observer } from 'mobx-react-lite';
 import { Text } from '@deriv/components';
 import { localize } from 'Components/i18next';
@@ -9,7 +8,7 @@ import { useStores } from 'Stores';
 import './order-details-timer.scss';
 
 const OrderDetailsTimer = observer(() => {
-    const getTimeLeft = time => {
+    const getTimeLeft = (time: number) => {
         const distance = ServerTime.getDistanceToServerTime(time);
         return {
             distance,
@@ -20,11 +19,11 @@ const OrderDetailsTimer = observer(() => {
     const { order_store } = useStores();
     const { order_expiry_milliseconds, should_show_order_timer } = order_store.order_information;
     const [remaining_time, setRemainingTime] = React.useState(getTimeLeft(order_expiry_milliseconds).label);
-    const interval = React.useRef(null);
+    const interval = React.useRef<NodeJS.Timeout | null>(null);
 
     const countDownTimer = () => {
         const time_left = getTimeLeft(order_expiry_milliseconds);
-        if (time_left.distance < 0) clearInterval(interval.current);
+        if (time_left.distance < 0 && interval.current) clearInterval(interval.current);
 
         setRemainingTime(time_left.label);
     };
@@ -32,7 +31,10 @@ const OrderDetailsTimer = observer(() => {
     React.useEffect(() => {
         countDownTimer();
         interval.current = setInterval(countDownTimer, 1000);
-        return () => clearInterval(interval.current);
+
+        return () => {
+            if (interval.current) clearInterval(interval.current);
+        };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [order_expiry_milliseconds]);
 
@@ -49,12 +51,8 @@ const OrderDetailsTimer = observer(() => {
         );
     }
 
-    clearInterval(interval.current);
+    if (interval.current) clearInterval(interval.current);
     return null;
 });
-
-OrderDetailsTimer.propTypes = {
-    order_information: PropTypes.object,
-};
 
 export default OrderDetailsTimer;

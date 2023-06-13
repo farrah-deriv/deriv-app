@@ -201,7 +201,6 @@ export default class OrderStore {
                 order_details_store.setErrorMessage(response.error.message);
             } else {
                 general_store.hideModal();
-                order_details_store.setShouldShowOrderDetailsDispute(false);
                 order_details_store.setErrorMessage('');
             }
         });

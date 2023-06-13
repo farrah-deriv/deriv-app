@@ -26,7 +26,7 @@ jest.mock('@deriv/components', () => ({
 
 jest.mock('Pages/orders/order-table/order-table.jsx', () => jest.fn(() => <div>Order Table</div>));
 
-jest.mock('Components/order-details/order-details.jsx', () => jest.fn(() => <div>Order Details</div>));
+jest.mock('Pages/orders/order-details', () => jest.fn(() => <div>Order Details</div>));
 
 describe('<Orders/>', () => {
     it('should invoke setup methods on component load', () => {

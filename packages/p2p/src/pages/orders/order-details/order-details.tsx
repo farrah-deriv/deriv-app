@@ -1,27 +1,27 @@
 import classNames from 'classnames';
 import React from 'react';
 import { useHistory } from 'react-router-dom';
-import { Button, HintBox, Icon, Text, ThemedScrollbars } from '@deriv/components';
-import { formatMoney, isDesktop, isMobile } from '@deriv/shared';
+import { Button, DesktopWrapper, HintBox, Icon, Text, ThemedScrollbars } from '@deriv/components';
+import { formatMoney, isMobile } from '@deriv/shared';
 import { useStore, observer } from '@deriv/stores';
-import { Localize, localize } from 'Components/i18next';
 import { api_error_codes } from 'Constants/api-error-codes.js';
-import Chat from 'Pages/orders/chat/chat.jsx';
+import { Localize, localize } from 'Components/i18next';
+import { useModalManagerContext } from 'Components/modal-manager/modal-manager-context';
+import P2PAccordion from 'Components/p2p-accordion/p2p-accordion';
 import StarRating from 'Components/star-rating';
-import UserRatingButton from 'Components/user-rating-button';
-import OrderDetailsFooter from './order-details-footer.jsx';
-import OrderDetailsTimer from './order-details-timer.jsx';
-import OrderInfoBlock from './order-info-block.jsx';
-import OrderDetailsWrapper from './order-details-wrapper.jsx';
-import P2PAccordion from 'Components/p2p-accordion/p2p-accordion.jsx';
-import { useStores } from 'Stores';
-import PaymentMethodAccordionHeader from './payment-method-accordion-header.jsx';
-import PaymentMethodAccordionContent from './payment-method-accordion-content.jsx';
 import MyProfileSeparatorContainer from 'Pages/my-profile/my-profile-separator-container';
+import Chat from 'Pages/orders/chat/chat';
+import UserRatingButton from 'Pages/orders/user-rating-button';
+import { useStores } from 'Stores';
+import { TPaymentMethod } from 'Types';
 import { setDecimalPlaces, removeTrailingZeros, roundOffDecimal } from 'Utils/format-value';
 import { getDateAfterHours } from 'Utils/date-time';
-import { useModalManagerContext } from 'Components/modal-manager/modal-manager-context';
-import './order-details.scss';
+import OrderDetailsFooter from './order-details-footer';
+import OrderDetailsTimer from './order-details-timer';
+import OrderDetailsWrapper from './order-details-wrapper';
+import OrderInfoBlock from './order-info-block';
+import PaymentMethodAccordionHeader from './payment-method-accordion/payment-method-accordion-header';
+import PaymentMethodAccordionContent from './payment-method-accordion/payment-method-accordion-content';
 
 const OrderDetails = observer(() => {
     const { buy_sell_store, general_store, my_profile_store, order_store, sendbird_store } = useStores();
@@ -66,7 +66,7 @@ const OrderDetails = observer(() => {
     const { chat_channel_url } = sendbird_store;
 
     const [should_expand_all, setShouldExpandAll] = React.useState(false);
-    const [remaining_review_time, setRemainingReviewTime] = React.useState(null);
+    const [remaining_review_time, setRemainingReviewTime] = React.useState('');
 
     const history = useHistory();
 
@@ -74,7 +74,7 @@ const OrderDetails = observer(() => {
         ? localize('Buy {{offered_currency}} order', { offered_currency: account_currency })
         : localize('Sell {{offered_currency}} order', { offered_currency: account_currency });
 
-    const rating_average_decimal = review_details ? Number(review_details.rating).toFixed(1) : undefined;
+    const rating_average_decimal = review_details ? Number(Number(review_details.rating).toFixed(1)) : undefined;
 
     const showRatingModal = () => {
         showModal({
@@ -110,17 +110,19 @@ const OrderDetails = observer(() => {
             handleChatChannelCreation();
         }
 
+        const order_props = {
+            order_id: order_store.order_id,
+            redirectToOrderDetails: general_store.redirectToOrderDetails,
+            setIsRatingModalOpen: (is_open: boolean) => (is_open ? showRatingModal : hideModal),
+        };
+
         return () => {
             disposeListeners();
             disposeReactions();
             order_store.setOrderPaymentMethodDetails(undefined);
             order_store.setOrderId(null);
             order_store.setActiveOrder(null);
-            setP2POrderProps({
-                order_id: order_store.order_id,
-                redirectToOrderDetails: general_store.redirectToOrderDetails,
-                setIsRatingModalOpen: is_open => (is_open ? showRatingModal : hideModal),
-            });
+            setP2POrderProps(order_props);
             history?.replace({
                 search: '',
                 hash: location.hash,
@@ -300,15 +302,19 @@ const OrderDetails = observer(() => {
                                             className='order-details-card__accordion'
                                             icon_close='IcChevronRight'
                                             icon_open='IcChevronDown'
-                                            list={order_store?.order_payment_method_details?.map(payment_method => ({
-                                                header: (
-                                                    <PaymentMethodAccordionHeader payment_method={payment_method} />
-                                                ),
-                                                content: (
-                                                    <PaymentMethodAccordionContent payment_method={payment_method} />
-                                                ),
-                                                payment_method,
-                                            }))}
+                                            list={order_store?.order_payment_method_details?.map(
+                                                (payment_method: TPaymentMethod) => ({
+                                                    header: (
+                                                        <PaymentMethodAccordionHeader payment_method={payment_method} />
+                                                    ),
+                                                    content: (
+                                                        <PaymentMethodAccordionContent
+                                                            payment_method={payment_method}
+                                                        />
+                                                    ),
+                                                    payment_method,
+                                                })
+                                            )}
                                             is_expand_all={should_expand_all}
                                             onChange={setShouldExpandAll}
                                         />
@@ -381,6 +387,7 @@ const OrderDetails = observer(() => {
                                             full_star_className='order-details-card__star'
                                             full_star_icon='IcFullStar'
                                             initial_value={rating_average_decimal}
+                                            rating_value={review_details.rating}
                                             is_readonly
                                             number_of_stars={5}
                                             should_allow_hover_effect={false}
@@ -418,12 +425,16 @@ const OrderDetails = observer(() => {
                                 </div>
                             </React.Fragment>
                         )}
-                        {should_show_order_footer && isDesktop() && (
-                            <MyProfileSeparatorContainer.Line className='order-details-card--line' />
+                        {should_show_order_footer && (
+                            <DesktopWrapper>
+                                <MyProfileSeparatorContainer.Line className='order-details-card--line' />
+                            </DesktopWrapper>
                         )}
                     </ThemedScrollbars>
-                    {should_show_order_footer && isDesktop() && (
-                        <OrderDetailsFooter order_information={order_store.order_information} />
+                    {should_show_order_footer && (
+                        <DesktopWrapper>
+                            <OrderDetailsFooter />
+                        </DesktopWrapper>
                     )}
                 </div>
                 {chat_channel_url && <Chat />}
