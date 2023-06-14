@@ -18,6 +18,15 @@ const getPascalCase = str => {
     );
 };
 
+const getSnakeCase = str => {
+    if (!str) return '';
+    return String(str)
+        .replace(/^[^A-Za-z0-9]*|[^A-Za-z0-9]*$/g, '')
+        .replace(/[^_A-Za-z0-9]+/g, '')
+        .replace(/([a-z])([A-Z])/g, (m, a, b) => `${a}_${b}`)
+        .toLowerCase();
+};
+
 const getFileNameFromPath = path => path.match(/([^/]*)\/*$/)[1].replace('.svg', '');
 
 const getEnglishCharacters = input =>
@@ -28,8 +37,9 @@ const getEnglishCharacters = input =>
         .join('');
 
 module.exports = {
-    getPascalCase,
+    getEnglishCharacters,
     getFileNameFromPath,
     getKebabCase,
-    getEnglishCharacters,
+    getPascalCase,
+    getSnakeCase,
 };

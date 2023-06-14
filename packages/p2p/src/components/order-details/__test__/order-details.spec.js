@@ -106,7 +106,7 @@ jest.mock('Components/order-details/order-details-footer.jsx', () => jest.fn(() 
 
 jest.mock('Components/order-details/order-info-block.jsx', () => jest.fn(() => <div>Order Info Block</div>));
 
-jest.mock('Pages/orders/chat/chat.jsx', () => jest.fn(() => <div>Chat section</div>));
+jest.mock('Pages/orders/chat', () => jest.fn(() => <div>Chat section</div>));
 
 jest.mock('Components/p2p-accordion/p2p-accordion.jsx', () => jest.fn(() => <div>Payment methods listed</div>));
 

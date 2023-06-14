@@ -6,7 +6,7 @@ import { formatMoney, isDesktop, isMobile } from '@deriv/shared';
 import { useStore, observer } from '@deriv/stores';
 import { Localize, localize } from 'Components/i18next';
 import { api_error_codes } from '../../constants/api-error-codes.js';
-import Chat from 'Pages/orders/chat/chat.jsx';
+import Chat from 'Pages/orders/chat';
 import StarRating from 'Components/star-rating';
 import UserRatingButton from 'Components/user-rating-button';
 import OrderDetailsFooter from 'Components/order-details/order-details-footer.jsx';
