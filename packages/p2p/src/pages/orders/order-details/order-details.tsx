@@ -10,7 +10,7 @@ import { useModalManagerContext } from 'Components/modal-manager/modal-manager-c
 import P2PAccordion from 'Components/p2p-accordion/p2p-accordion';
 import StarRating from 'Components/star-rating';
 import MyProfileSeparatorContainer from 'Pages/my-profile/my-profile-separator-container';
-import Chat from 'Pages/orders/chat/chat';
+import Chat from 'Pages/orders/chat';
 import UserRatingButton from 'Pages/orders/user-rating-button';
 import { useStores } from 'Stores';
 import { TPaymentMethod } from 'Types';

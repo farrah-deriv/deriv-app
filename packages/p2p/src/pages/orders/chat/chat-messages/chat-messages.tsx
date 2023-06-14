@@ -1,22 +1,18 @@
-import classNames from 'classnames';
 import React from 'react';
-import PropTypes from 'prop-types';
+import classNames from 'classnames';
 import { Text, ThemedScrollbars } from '@deriv/components';
 import { formatMilliseconds } from '@deriv/shared';
-import { observer } from 'mobx-react-lite';
-import ChatMessageReceipt from 'Pages/orders/chat/chat-message-receipt.jsx';
-import ChatMessageText from 'Pages/orders/chat/chat-message-text.jsx';
+import { observer } from '@deriv/stores';
 import { useStores } from 'Stores';
-import ChatMessage from 'Utils/chat-message';
-import './chat-messages.scss';
+import ChatMessage, { isImageType } from 'Utils/chat-message';
+import ChatMessageReceipt from './chat-message-receipt';
+import ChatMessageText from './chat-message-text';
 
 const ChatMessages = observer(() => {
     const { sendbird_store } = useStores();
-    const scroll_ref = React.useRef(null);
+    const scroll_ref = React.useRef<(HTMLDivElement & SVGSVGElement) | null>(null);
 
-    const isImageType = type => ['image/jpeg', 'image/png', 'image/gif'].includes(type);
-
-    const onImageLoad = event => {
+    const onImageLoad: React.ReactEventHandler<HTMLImageElement> = event => {
         // Height of element changes after the image is loaded. Accommodate
         // this extra height in the scroll.
         if (scroll_ref.current) {
@@ -34,7 +30,7 @@ const ChatMessages = observer(() => {
     sendbird_store.setMessagesRef(scroll_ref);
 
     if (sendbird_store.chat_messages.length) {
-        let current_date = null;
+        let current_date: null | string = null;
 
         return (
             <ThemedScrollbars
@@ -44,17 +40,17 @@ const ChatMessages = observer(() => {
                 refSetter={scroll_ref}
                 onScroll={event => sendbird_store.onMessagesScroll(event)}
             >
-                {sendbird_store.chat_messages.map(chat_message => {
+                {sendbird_store.chat_messages.map((chat_message: ChatMessage) => {
                     const is_my_message = chat_message.sender_user_id === sendbird_store.chat_info.user_id;
                     const message_date = formatMilliseconds(chat_message.created_at, 'MMMM D, YYYY');
-                    const message_colour = is_my_message ? 'colored-background' : 'general';
+                    const message_color = is_my_message ? 'colored-background' : 'general';
                     const should_render_date = current_date !== message_date && Boolean((current_date = message_date));
 
                     return (
                         <React.Fragment key={chat_message.id}>
                             {should_render_date && (
                                 <div className='chat-messages-date'>
-                                    <Text align='center' color='less-prominent' lh='m' size='xs' weight='bold'>
+                                    <Text align='center' color='less-prominent' size='xs' weight='bold'>
                                         {message_date}
                                     </Text>
                                 </div>
@@ -64,9 +60,10 @@ const ChatMessages = observer(() => {
                                     'chat-messages-item',
                                     `chat-messages-item--${is_my_message ? 'outgoing' : 'incoming'}`
                                 )}
+                                data-testid='dt_chat_messages_item'
                             >
                                 {chat_message.message_type === ChatMessage.TYPE_USER && (
-                                    <ChatMessageText colour={message_colour}>{chat_message.message}</ChatMessageText>
+                                    <ChatMessageText color={message_color}>{chat_message.message}</ChatMessageText>
                                 )}
                                 {chat_message.message_type === ChatMessage.TYPE_FILE &&
                                     (isImageType(chat_message.file_type) ? (
@@ -79,7 +76,7 @@ const ChatMessages = observer(() => {
                                             <img src={chat_message.url} onLoad={onImageLoad} />
                                         </a>
                                     ) : (
-                                        <ChatMessageText colour={message_colour}>
+                                        <ChatMessageText color={message_color}>
                                             <a
                                                 className='chat-messages-item-file'
                                                 href={chat_message.url}
@@ -110,18 +107,9 @@ const ChatMessages = observer(() => {
         );
     }
 
-    return <div className='chat-messages' />;
+    return <div className='chat-messages' data-testid='dt_blank_chat_messages' />;
 });
 
 ChatMessages.displayName = 'ChatMessages';
-ChatMessages.propTypes = {
-    active_chat_channel: PropTypes.object,
-    chat_messages: PropTypes.number,
-    chat_info: PropTypes.shape({
-        app_id: PropTypes.string,
-        user_id: PropTypes.string,
-        token: PropTypes.string,
-    }),
-};
 
 export default ChatMessages;

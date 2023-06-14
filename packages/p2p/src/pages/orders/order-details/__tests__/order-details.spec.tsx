@@ -125,7 +125,7 @@ jest.mock('@deriv/shared', () => ({
 
 jest.mock('Components/p2p-accordion/p2p-accordion', () => jest.fn(() => <div>Payment methods listed</div>));
 
-jest.mock('Pages/orders/chat/chat.jsx', () => jest.fn(() => <div>Chat section</div>));
+jest.mock('Pages/orders/chat', () => jest.fn(() => <div>Chat section</div>));
 
 jest.mock('Pages/orders/order-details/order-details-footer', () => jest.fn(() => <div>Order details footer</div>));
 

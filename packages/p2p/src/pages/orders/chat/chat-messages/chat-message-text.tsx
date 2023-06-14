@@ -1,20 +1,19 @@
 import React from 'react';
 import { Text } from '@deriv/components';
-import PropTypes from 'prop-types';
 import './chat-message-text.scss';
 
-const ChatMessageText = React.memo(({ children, colour }) => (
+type TChatMessageText = {
+    color?: string;
+};
+
+const ChatMessageText = React.memo(({ children, color }: React.PropsWithChildren<TChatMessageText>) => (
     <div className='chat-message-text'>
-        <Text as='p' color={colour} size='xs'>
+        <Text as='p' color={color} size='xs'>
             {children}
         </Text>
     </div>
 ));
 
 ChatMessageText.displayName = 'ChatMessageText';
-ChatMessageText.propTypes = {
-    children: PropTypes.any,
-    colour: PropTypes.string,
-};
 
 export default ChatMessageText;

@@ -1,12 +1,9 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import { Text } from '@deriv/components';
+import { DesktopWrapper, Text } from '@deriv/components';
 import { isMobile } from '@deriv/shared';
-import { observer } from 'mobx-react-lite';
+import { observer } from '@deriv/stores';
 import { useStores } from 'Stores';
-import ExtendedOrderDetails from 'Utils/orders';
 import { generateHexColourFromNickname, getShortNickname } from 'Utils/string';
-import './chat-header.scss';
 
 const ChatHeaderBody = observer(() => {
     const { order_store, sendbird_store } = useStores();
@@ -41,23 +38,16 @@ const ChatHeaderBody = observer(() => {
 });
 
 const ChatHeader = () => {
-    if (isMobile()) {
-        return null; // Handled in chat-wrapper.jsx
-    }
-
     return (
-        <div className='chat-header'>
-            <ChatHeaderBody />
-        </div>
+        <DesktopWrapper>
+            <div className='chat-header'>
+                <ChatHeaderBody />
+            </div>
+        </DesktopWrapper>
     );
 };
 
 ChatHeader.Body = ChatHeaderBody;
 ChatHeader.displayName = 'ChatHeader';
-ChatHeader.propTypes = {
-    order_information: PropTypes.instanceOf(ExtendedOrderDetails),
-    last_other_user_activity: PropTypes.string,
-    setShouldShowChatModal: PropTypes.func,
-};
 
 export default ChatHeader;
