@@ -337,7 +337,7 @@ type TNotificationStore = {
     refreshNotifications: () => void;
     removeNotificationByKey: (obj: { key: string }) => void;
     removeNotificationMessage: (obj: { key: string; should_show_again?: boolean }) => void;
-    setP2POrderProps: (obj: { [key: string]: any }) => void;
+    setP2POrderProps: <T>(obj: { [key: string]: T }) => void;
     showAccountSwitchToRealNotification: (loginid: string, currency: string) => void;
     setP2PRedirectTo: () => void;
 };

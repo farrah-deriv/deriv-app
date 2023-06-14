@@ -1,7 +1,7 @@
 import React from 'react';
-import { useSafeState } from '@deriv/components';
 import { reaction } from 'mobx';
 import { observer } from 'mobx-react-lite';
+import { useSafeState } from '@deriv/components';
 import OrderDetails from 'Pages/orders/order-details';
 import { useStores } from 'Stores';
 import OrderTable from './order-table/order-table.jsx';
