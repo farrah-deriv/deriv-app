@@ -4,8 +4,8 @@ import { observer } from '@deriv/stores';
 import { Localize, localize } from 'Components/i18next';
 import { useModalManagerContext } from 'Components/modal-manager/modal-manager-context';
 import { useStores } from 'Stores';
+import OrderDetailsComplainModalBody from './order-details-complain-modal-body';
 import OrderDetailsComplainModalFooter from './order-details-complain-modal-footer';
-import OrderDetailsComplainModalRadioGroup from './order-details-complain-modal-radio-group';
 
 const OrderDetailsComplainModal = () => {
     const { hideModal, is_modal_open } = useModalManagerContext();
@@ -48,16 +48,11 @@ const OrderDetailsComplainModal = () => {
                     )}
                     page_footer_className='order-details-complain-modal__footer'
                 >
-                    <OrderDetailsComplainModalRadioGroup
+                    <OrderDetailsComplainModalBody
                         is_buy_order_for_user={is_buy_order_for_user}
                         dispute_reason={dispute_reason}
                         onCheckboxChange={onCheckboxChange}
                     />
-                    <div className='order-details-complain-modal__explanation'>
-                        <Text size='xxs'>
-                            <Localize i18n_default_text="If your complaint isn't listed here, please contact our Customer Support team." />
-                        </Text>
-                    </div>
                 </MobileFullPageModal>
             </MobileWrapper>
             <DesktopWrapper>
@@ -75,16 +70,11 @@ const OrderDetailsComplainModal = () => {
                     height='500px'
                 >
                     <Modal.Body className='order-details-complain-modal__body'>
-                        <OrderDetailsComplainModalRadioGroup
+                        <OrderDetailsComplainModalBody
                             is_buy_order_for_user={is_buy_order_for_user}
                             dispute_reason={dispute_reason}
                             onCheckboxChange={onCheckboxChange}
                         />
-                        <div className='order-details-complain-modal__explanation'>
-                            <Text size='xxs'>
-                                <Localize i18n_default_text="If your complaint isn't listed here, please contact our Customer Support team." />
-                            </Text>
-                        </div>
                     </Modal.Body>
                     <Modal.Footer>
                         <OrderDetailsComplainModalFooter

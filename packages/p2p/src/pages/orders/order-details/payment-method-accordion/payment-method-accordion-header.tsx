@@ -1,14 +1,14 @@
 import React from 'react';
 import { Icon, Text } from '@deriv/components';
 import { getSnakeCase } from '@deriv/components/utils/helper';
-import './payment-method-accordion-header.scss';
 import { TPaymentMethod } from 'Types';
+import './payment-method-accordion-header.scss';
 
-type PaymentMethodAccordionHeader = {
+type TPaymentMethodAccordionHeaderProps = {
     payment_method: TPaymentMethod;
 };
 
-const PaymentMethodAccordionHeader = ({ payment_method }: PaymentMethodAccordionHeader) => {
+const PaymentMethodAccordionHeader = ({ payment_method }: TPaymentMethodAccordionHeaderProps) => {
     const method = payment_method.display_name.replace(/\s|-/gm, '');
 
     if (method === 'BankTransfer' || method === 'Other') {

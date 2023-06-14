@@ -5,11 +5,11 @@ import PageReturn from 'Components/page-return';
 import { useStores } from 'Stores';
 import OrderDetailsFooter from './order-details-footer';
 
-type TOrderDetailsWrapper = {
+type TOrderDetailsWrapperProps = {
     page_title: string;
 };
 
-const OrderDetailsWrapper = ({ children, page_title }: React.PropsWithChildren<TOrderDetailsWrapper>) => {
+const OrderDetailsWrapper = ({ children, page_title }: React.PropsWithChildren<TOrderDetailsWrapperProps>) => {
     const { order_store, sendbird_store } = useStores();
     const { isCurrentModal } = useModalManagerContext();
 

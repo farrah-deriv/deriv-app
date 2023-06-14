@@ -1,0 +1,14 @@
+.order-details-complain-modal-body {
+    background-color: var(--general-section-1);
+    margin-top: 1.6rem;
+    padding: 1.6rem;
+
+    @include mobile {
+        border-radius: $BORDER_RADIUS;
+        margin: 1.6rem;
+    }
+
+    @include tablet-up {
+        border-radius: 8px;
+    }
+}

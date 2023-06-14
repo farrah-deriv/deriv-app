@@ -23,7 +23,7 @@ import OrderInfoBlock from './order-info-block';
 import PaymentMethodAccordionHeader from './payment-method-accordion/payment-method-accordion-header';
 import PaymentMethodAccordionContent from './payment-method-accordion/payment-method-accordion-content';
 
-const OrderDetails = observer(() => {
+const OrderDetails = () => {
     const { buy_sell_store, general_store, my_profile_store, order_store, sendbird_store } = useStores();
     const {
         notifications: { removeNotificationByKey, removeNotificationMessage, setP2POrderProps },
@@ -441,6 +441,6 @@ const OrderDetails = observer(() => {
             </div>
         </OrderDetailsWrapper>
     );
-});
+};
 
-export default OrderDetails;
+export default observer(OrderDetails);

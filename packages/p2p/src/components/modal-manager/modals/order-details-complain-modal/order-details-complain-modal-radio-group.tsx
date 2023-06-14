@@ -4,7 +4,7 @@ import { isMobile } from '@deriv/shared';
 import { localize } from 'Components/i18next';
 import './order-details-complain-modal-radio-group.scss';
 
-type TOrderDetailsComplainModalRadioGroup = {
+type TOrderDetailsComplainModalRadioGroupProps = {
     dispute_reason: string;
     is_buy_order_for_user: boolean;
     onCheckboxChange: (reason: string) => void;
@@ -14,7 +14,7 @@ const OrderDetailsComplainModalRadioGroup = ({
     dispute_reason,
     onCheckboxChange,
     is_buy_order_for_user,
-}: TOrderDetailsComplainModalRadioGroup) => (
+}: TOrderDetailsComplainModalRadioGroupProps) => (
     <RadioGroup
         className='order-details-complain-modal-radio-group'
         name='reason'
@@ -24,7 +24,6 @@ const OrderDetailsComplainModalRadioGroup = ({
         should_wrap_items={isMobile()}
     >
         <RadioGroup.Item
-            disabled={false}
             value={is_buy_order_for_user ? 'seller_not_released' : 'buyer_not_paid'}
             label={
                 is_buy_order_for_user
@@ -33,7 +32,6 @@ const OrderDetailsComplainModalRadioGroup = ({
             }
         />
         <RadioGroup.Item
-            disabled={false}
             value='buyer_underpaid'
             label={
                 is_buy_order_for_user
@@ -42,7 +40,6 @@ const OrderDetailsComplainModalRadioGroup = ({
             }
         />
         <RadioGroup.Item
-            disabled={false}
             value='buyer_overpaid'
             label={
                 is_buy_order_for_user

@@ -7,7 +7,7 @@ import ServerTime from 'Utils/server-time';
 import { useStores } from 'Stores';
 import './order-details-timer.scss';
 
-const OrderDetailsTimer = observer(() => {
+const OrderDetailsTimer = () => {
     const getTimeLeft = (time: number) => {
         const distance = ServerTime.getDistanceToServerTime(time);
         return {
@@ -53,6 +53,6 @@ const OrderDetailsTimer = observer(() => {
 
     if (interval.current) clearInterval(interval.current);
     return null;
-});
+};
 
-export default OrderDetailsTimer;
+export default observer(OrderDetailsTimer);

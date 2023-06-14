@@ -5,7 +5,7 @@ import { Localize } from 'Components/i18next';
 import { useStores } from 'Stores';
 import './order-details-footer.scss';
 
-const OrderDetailsFooter = observer(() => {
+const OrderDetailsFooter = () => {
     const { general_store, order_store } = useStores();
     const {
         id,
@@ -122,6 +122,6 @@ const OrderDetailsFooter = observer(() => {
     }
 
     return null;
-});
+};
 
-export default OrderDetailsFooter;
+export default observer(OrderDetailsFooter);

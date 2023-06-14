@@ -3,11 +3,11 @@ import { Text } from '@deriv/components';
 import { TPaymentMethod } from 'Types';
 import './payment-method-accordion-content.scss';
 
-type PaymentMethodAccordionContent = {
+type TPaymentMethodAccordionContentProps = {
     payment_method: TPaymentMethod;
 };
 
-const PaymentMethodAccordionContent = ({ payment_method }: PaymentMethodAccordionContent) => {
+const PaymentMethodAccordionContent = ({ payment_method }: TPaymentMethodAccordionContentProps) => {
     return (
         <React.Fragment>
             {Object.entries(payment_method?.fields).map((field, key) => {

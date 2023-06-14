@@ -3,19 +3,19 @@ import { Button } from '@deriv/components';
 import { Localize } from 'Components/i18next';
 import FormError from 'Components/section-error';
 
-type TComplainFooter = {
+type TComplainFooterProps = {
     error_message: string;
     dispute_reason: string;
     onClickSubmitButton: () => void;
     onClickCloseButton: () => void;
 };
 
-const OrderDetailsComplainFooter = ({
+const OrderDetailsComplainModalFooter = ({
     error_message,
     dispute_reason,
     onClickCloseButton,
     onClickSubmitButton,
-}: TComplainFooter) => {
+}: TComplainFooterProps) => {
     return (
         <React.Fragment>
             {error_message && <FormError message={error_message} />}
@@ -31,4 +31,4 @@ const OrderDetailsComplainFooter = ({
     );
 };
 
-export default OrderDetailsComplainFooter;
+export default OrderDetailsComplainModalFooter;

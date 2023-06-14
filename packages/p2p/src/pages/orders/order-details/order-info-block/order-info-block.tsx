@@ -1,8 +1,8 @@
 import React from 'react';
-import { Text } from '@deriv/components';
 import classNames from 'classnames';
+import { Text } from '@deriv/components';
 
-type OrderInfoBlock = {
+type TOrderInfoBlockProps = {
     className?: string;
     label: string;
     size?: string;
@@ -10,7 +10,7 @@ type OrderInfoBlock = {
     weight?: string;
 };
 
-const OrderInfoBlock = ({ className, label, value, size = 'xxs', weight = 'normal' }: OrderInfoBlock) => (
+const OrderInfoBlock = ({ className, label, value, size = 'xxs', weight = 'normal' }: TOrderInfoBlockProps) => (
     <div className={classNames('order-info-block', className)}>
         <Text as='p' color='prominent' size={size} weight={weight}>
             {label}
