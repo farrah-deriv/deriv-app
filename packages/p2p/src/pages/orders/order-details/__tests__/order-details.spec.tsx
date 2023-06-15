@@ -113,7 +113,7 @@ jest.mock('@deriv/shared', () => ({
     isDesktop: jest.fn(() => true),
 }));
 
-//jest.mock('Components/p2p-accordion/p2p-accordion', () => jest.fn(() => <div>Payment methods listed</div>));
+jest.mock('Components/p2p-accordion/p2p-accordion', () => jest.fn(() => <div>Payment methods listed</div>));
 
 jest.mock('Pages/orders/chat', () => jest.fn(() => <div>Chat section</div>));
 
@@ -440,6 +440,7 @@ describe('<OrderDetails/>', () => {
         });
 
         expect(screen.getByText('Payment details')).toBeInTheDocument();
+        expect(screen.getByText('Payment methods listed')).toBeInTheDocument();
 
         const expand_button = screen.getByText('Expand all');
         expect(expand_button).toBeInTheDocument();
