@@ -76,6 +76,15 @@ const OrderDetails = () => {
 
     const rating_average_decimal = review_details ? Number(Number(review_details.rating).toFixed(1)) : undefined;
 
+    const payment_methods_accordion_list = React.useMemo(() => {
+        const { order_payment_method_details } = order_store;
+        return order_payment_method_details?.map((payment_method: TPaymentMethod) => ({
+            header: <PaymentMethodAccordionHeader payment_method={payment_method} />,
+            content: <PaymentMethodAccordionContent payment_method={payment_method} />,
+            payment_method,
+        }));
+    }, [order_store?.order_payment_method_details]);
+
     const showRatingModal = () => {
         showModal({
             key: 'RatingModal',
@@ -113,7 +122,7 @@ const OrderDetails = () => {
         const order_props = {
             order_id: order_store.order_id,
             redirectToOrderDetails: general_store.redirectToOrderDetails,
-            setIsRatingModalOpen: (is_open: boolean) => (is_open ? showRatingModal : hideModal),
+            setIsRatingModalOpen: (is_open: boolean) => (is_open ? showRatingModal() : hideModal()),
         };
 
         return () => {
@@ -290,6 +299,7 @@ const OrderDetails = () => {
                                                 className='my-ads__expand-button'
                                                 onClick={() => setShouldExpandAll(prev_state => !prev_state)}
                                                 transparent
+                                                type='button'
                                             >
                                                 <Text size='xss' weight='bold' color='red'>
                                                     {should_expand_all
@@ -302,19 +312,7 @@ const OrderDetails = () => {
                                             className='order-details-card__accordion'
                                             icon_close='IcChevronRight'
                                             icon_open='IcChevronDown'
-                                            list={order_store?.order_payment_method_details?.map(
-                                                (payment_method: TPaymentMethod) => ({
-                                                    header: (
-                                                        <PaymentMethodAccordionHeader payment_method={payment_method} />
-                                                    ),
-                                                    content: (
-                                                        <PaymentMethodAccordionContent
-                                                            payment_method={payment_method}
-                                                        />
-                                                    ),
-                                                    payment_method,
-                                                })
-                                            )}
+                                            list={payment_methods_accordion_list}
                                             is_expand_all={should_expand_all}
                                             onChange={setShouldExpandAll}
                                         />
@@ -360,13 +358,11 @@ const OrderDetails = () => {
                                     />
                                 </div>
                                 <Text className='order-details-card--rating__text' color='less-prominent' size='xxxs'>
-                                    {is_reviewable ? (
-                                        remaining_review_time && (
-                                            <Localize
-                                                i18n_default_text='You have until {{remaining_review_time}} GMT to rate this transaction.'
-                                                values={{ remaining_review_time }}
-                                            />
-                                        )
+                                    {is_reviewable && remaining_review_time ? (
+                                        <Localize
+                                            i18n_default_text='You have until {{remaining_review_time}} GMT to rate this transaction.'
+                                            values={{ remaining_review_time }}
+                                        />
                                     ) : (
                                         <Localize i18n_default_text='You can no longer rate this transaction.' />
                                     )}

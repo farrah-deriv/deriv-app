@@ -1,6 +1,9 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import { mock_bank_transfer_payment_method, mock_ewallet_payment_method } from '../__mocks__/mock-data';
+import {
+    mock_bank_transfer_payment_method,
+    mock_ewallet_payment_method,
+} from 'Pages/orders/order-details/__mocks__/mock-order-details-data';
 import PaymentMethodAccordionHeader from '../payment-method-accordion-header';
 
 describe('<PaymentMethodAccordionHeader/>', () => {

@@ -3,6 +3,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { StoreProvider, mockStore } from '@deriv/stores';
 import { useModalManagerContext } from 'Components/modal-manager/modal-manager-context';
+import { mock_bank_transfer_payment_method } from 'Pages/orders/order-details/__mocks__/mock-order-details-data';
 import { useStores } from 'Stores';
 import OrderDetails from '../order-details';
 
@@ -51,23 +52,21 @@ const mock_order_store = {
     order_id: '123',
     has_order_payment_method_details: false,
     order_payment_method_details: [],
-    setOrderPaymentMethodDetails: jest.fn(),
     getSettings: jest.fn(),
     getWebsiteStatus: jest.fn(),
-    setRatingValue: jest.fn(),
+    setActiveOrder: jest.fn(),
     setIsRecommended: jest.fn(),
     setOrderId: jest.fn(),
-    setActiveOrder: jest.fn(),
+    setOrderPaymentMethodDetails: jest.fn(),
+    setOrderRating: jest.fn(),
+    setRatingValue: jest.fn(),
 };
-
-const mock_set_chat_channel_url = jest.fn();
-const mock_create_chat_for_new_order = jest.fn();
 
 const mock_sendbird_store = {
     should_show_chat_on_orders: false,
-    setChatChannelUrl: mock_set_chat_channel_url,
+    setChatChannelUrl: jest.fn(),
     setHasChatError: jest.fn(),
-    createChatForNewOrder: mock_create_chat_for_new_order,
+    createChatForNewOrder: jest.fn(),
     registerEventListeners: jest.fn().mockReturnValue(jest.fn()),
     registerMobXReactions: jest.fn().mockReturnValue(jest.fn()),
 };
@@ -97,15 +96,11 @@ jest.mock('Stores', () => ({
     })),
 }));
 
-const mock_show_modal = jest.fn();
-const mock_hide_modal = jest.fn();
-const mock_use_register_modal_props = jest.fn();
-
 const mock_modal_manager_context = {
     isCurrentModal: jest.fn(() => false),
-    showModal: mock_show_modal,
-    hideModal: mock_hide_modal,
-    useRegisterModalProps: mock_use_register_modal_props,
+    showModal: jest.fn(),
+    hideModal: jest.fn(),
+    useRegisterModalProps: jest.fn(),
 };
 
 jest.mock('Components/modal-manager/modal-manager-context', () => ({
@@ -118,12 +113,7 @@ jest.mock('@deriv/shared', () => ({
     isDesktop: jest.fn(() => true),
 }));
 
-// jest.mock('react', () => ({
-//     ...jest.requireActual('react'),
-//     useState: jest.fn(),
-// }));
-
-jest.mock('Components/p2p-accordion/p2p-accordion', () => jest.fn(() => <div>Payment methods listed</div>));
+//jest.mock('Components/p2p-accordion/p2p-accordion', () => jest.fn(() => <div>Payment methods listed</div>));
 
 jest.mock('Pages/orders/chat', () => jest.fn(() => <div>Chat section</div>));
 
@@ -202,23 +192,6 @@ describe('<OrderDetails/>', () => {
         });
         expect(screen.getByText('40.00 AED')).toBeInTheDocument();
     });
-    it('should display payment details when Order is active', () => {
-        useStores.mockReturnValueOnce({
-            order_store: {
-                ...mock_order_store,
-                order_information: { ...mock_order_info, is_active_order: true },
-                has_order_payment_method_details: true,
-            },
-            sendbird_store: { ...mock_sendbird_store },
-            my_profile_store: { ...mock_my_profile_store },
-            buy_sell_store: { ...mock_buy_sell_store },
-            general_store: { ...mock_general_store },
-        });
-        render(<OrderDetails />, {
-            wrapper: ({ children }) => <StoreProvider store={mockStore({})}>{children}</StoreProvider>,
-        });
-        expect(screen.getByText('Payment details')).toBeInTheDocument();
-    });
     it('should render Chat component if should_show_chat_on_orders is enabled', () => {
         useStores.mockReturnValueOnce({
             order_store: {
@@ -271,7 +244,9 @@ describe('<OrderDetails/>', () => {
             wrapper: ({ children }) => <StoreProvider store={mockStore({})}>{children}</StoreProvider>,
         });
         userEvent.click(screen.getByTestId('dt_user_rating_button'));
-        expect(mock_show_modal).toHaveBeenCalledWith({ key: 'RatingModal' });
+        expect(mock_modal_manager_context.showModal).toHaveBeenCalledWith({
+            key: 'RatingModal',
+        });
     });
 
     it('should set chat channel after 1250ms if chat_channel_url is present', async () => {
@@ -280,7 +255,7 @@ describe('<OrderDetails/>', () => {
             wrapper: ({ children }) => <StoreProvider store={mockStore({})}>{children}</StoreProvider>,
         });
         jest.advanceTimersByTime(1250);
-        await waitFor(() => expect(mock_set_chat_channel_url).toHaveBeenCalledWith('http://www.deriv.com'));
+        await waitFor(() => expect(mock_sendbird_store.setChatChannelUrl).toHaveBeenCalledWith('http://www.deriv.com'));
         jest.useRealTimers();
     });
     it('should set chat channel onmount if chat_channel_url is present', () => {
@@ -298,7 +273,7 @@ describe('<OrderDetails/>', () => {
             wrapper: ({ children }) => <StoreProvider store={mockStore({})}>{children}</StoreProvider>,
         });
 
-        expect(mock_set_chat_channel_url).toHaveBeenCalledWith('http://www.deriv.com');
+        expect(mock_sendbird_store.setChatChannelUrl).toHaveBeenCalledWith('http://www.deriv.com');
     });
 
     it('should create chat channel onmount if chat_channel_url is not present', () => {
@@ -316,7 +291,7 @@ describe('<OrderDetails/>', () => {
             wrapper: ({ children }) => <StoreProvider store={mockStore({})}>{children}</StoreProvider>,
         });
 
-        expect(mock_create_chat_for_new_order).toHaveBeenCalled();
+        expect(mock_sendbird_store.createChatForNewOrder).toHaveBeenCalled();
     });
 
     it('should show email link expired modal if email is expired', () => {
@@ -334,7 +309,10 @@ describe('<OrderDetails/>', () => {
         render(<OrderDetails />, {
             wrapper: ({ children }) => <StoreProvider store={mockStore({})}>{children}</StoreProvider>,
         });
-        expect(mock_show_modal).toBeCalledWith({ key: 'EmailLinkExpiredModal' }, { should_stack_modal: false });
+        expect(mock_modal_manager_context.showModal).toBeCalledWith(
+            { key: 'EmailLinkExpiredModal' },
+            { should_stack_modal: false }
+        );
     });
 
     it('should hide modal when the order is expired', () => {
@@ -355,7 +333,7 @@ describe('<OrderDetails/>', () => {
         render(<OrderDetails />, {
             wrapper: ({ children }) => <StoreProvider store={mockStore({})}>{children}</StoreProvider>,
         });
-        expect(mock_hide_modal).toHaveBeenCalled();
+        expect(mock_modal_manager_context.hideModal).toHaveBeenCalled();
     });
 
     it('should show order remaining time', () => {
@@ -381,23 +359,98 @@ describe('<OrderDetails/>', () => {
         expect(screen.getByText('Your transaction experience')).toBeInTheDocument();
     });
 
-    it('should be able to expand payment methods accordion', () => {
-        useStores.mockReturnValueOnce({
+    it('should call onClickDone function in rating modal', () => {
+        const mock_store = mockStore({
+            notifications: {
+                removeNotificationMessage: jest.fn(),
+                removeNotificationByKey: jest.fn(),
+            },
+        });
+        render(<OrderDetails />, {
+            wrapper: ({ children }) => <StoreProvider store={mock_store}>{children}</StoreProvider>,
+        });
+        mock_modal_manager_context.useRegisterModalProps.mock.calls[0][0].props.onClickDone();
+
+        expect(mock_order_store.setOrderRating).toHaveBeenCalled();
+        expect(mock_store.notifications.removeNotificationMessage).toHaveBeenCalledWith({ key: 'p2p_order_123' });
+        expect(mock_store.notifications.removeNotificationByKey).toHaveBeenCalledWith({ key: 'p2p_order_123' });
+    });
+
+    it('should call onClickSkip function in rating modal', () => {
+        render(<OrderDetails />, {
+            wrapper: ({ children }) => <StoreProvider store={mockStore({})}>{children}</StoreProvider>,
+        });
+        mock_modal_manager_context.useRegisterModalProps.mock.calls[0][0].props.onClickSkip();
+
+        expect(mock_order_store.setRatingValue).toHaveBeenCalled();
+        expect(mock_modal_manager_context.hideModal).toHaveBeenCalled();
+    });
+    it('should open rating modal from order notification', () => {
+        const mock_store = mockStore({
+            notifications: {
+                setP2POrderProps: jest.fn(),
+            },
+        });
+
+        const { unmount } = render(<OrderDetails />, {
+            wrapper: ({ children }) => <StoreProvider store={mock_store}>{children}</StoreProvider>,
+        });
+
+        unmount();
+
+        (mock_store.notifications.setP2POrderProps as jest.Mock).mock.calls[0][0].setIsRatingModalOpen(true);
+
+        expect(mock_modal_manager_context.showModal).toHaveBeenCalledWith({ key: 'RatingModal' });
+    });
+
+    it('should close rating modal from order notification', () => {
+        const mock_store = mockStore({
+            notifications: {
+                setP2POrderProps: jest.fn(),
+            },
+        });
+
+        const { unmount } = render(<OrderDetails />, {
+            wrapper: ({ children }) => <StoreProvider store={mock_store}>{children}</StoreProvider>,
+        });
+
+        unmount();
+
+        (mock_store.notifications.setP2POrderProps as jest.Mock).mock.calls[0][0].setIsRatingModalOpen(false);
+
+        expect(mock_modal_manager_context.hideModal).toHaveBeenCalled();
+    });
+
+    it('should show payment details and be able to expand and collapse payment methods accordion', async () => {
+        useStores.mockReturnValue({
             order_store: {
                 ...mock_order_store,
-                order_information: { ...mock_order_info, is_active_order: true },
                 has_order_payment_method_details: true,
+                order_information: { ...mock_order_info, is_active_order: true },
+                order_payment_method_details: [mock_bank_transfer_payment_method],
             },
             sendbird_store: { ...mock_sendbird_store },
             my_profile_store: { ...mock_my_profile_store },
             buy_sell_store: { ...mock_buy_sell_store },
             general_store: { ...mock_general_store },
         });
+
         render(<OrderDetails />, {
             wrapper: ({ children }) => <StoreProvider store={mockStore({})}>{children}</StoreProvider>,
         });
+
+        expect(screen.getByText('Payment details')).toBeInTheDocument();
+
         const expand_button = screen.getByText('Expand all');
         expect(expand_button).toBeInTheDocument();
-        userEvent.click(expand_button);
+
+        await userEvent.click(expand_button);
+
+        const collapse_button = screen.getByText('Collapse all');
+        expect(collapse_button).toBeInTheDocument();
+
+        await userEvent.click(collapse_button);
+
+        expect(expand_button).toBeInTheDocument();
     });
 });

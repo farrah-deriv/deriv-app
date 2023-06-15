@@ -2,7 +2,7 @@ import React from 'react';
 import { isDesktop, isMobile } from '@deriv/shared';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { mock_channel } from 'Pages/orders/chat/__mocks__/mock-data';
+import { mock_channel } from 'Pages/orders/chat/__mocks__/mock-chat-data';
 import { useStores } from 'Stores';
 import ChatMessage from 'Utils/chat-message';
 import Chat from '../chat';
