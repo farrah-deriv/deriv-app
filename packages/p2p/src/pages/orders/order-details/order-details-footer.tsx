@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button, Text } from '@deriv/components';
-import { observer } from 'mobx-react-lite';
+import { observer } from '@deriv/stores';
 import { Localize } from 'Components/i18next';
 import { useStores } from 'Stores';
 import './order-details-footer.scss';

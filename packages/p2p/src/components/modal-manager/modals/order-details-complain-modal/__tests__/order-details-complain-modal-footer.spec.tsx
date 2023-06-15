@@ -11,8 +11,8 @@ describe('<OrderDetailsComplainModalFooter />', () => {
     };
     it('should render OrderDetailsComplainFooter with `Submit` and `Cancel` buttons', () => {
         render(<OrderDetailsComplainModalFooter {...mock_props} />);
-        expect(screen.getByText('Cancel')).toBeInTheDocument();
-        expect(screen.getByText('Submit')).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: 'Submit' })).toBeInTheDocument();
     });
 
     it('should render OrderDetailsComplainFooter with the error message', () => {

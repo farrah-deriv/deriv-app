@@ -1,6 +1,6 @@
 import React from 'react';
-import { observer } from 'mobx-react-lite';
 import { Text } from '@deriv/components';
+import { observer } from '@deriv/stores';
 import { localize } from 'Components/i18next';
 import { secondsToTimer } from 'Utils/date-time';
 import ServerTime from 'Utils/server-time';
