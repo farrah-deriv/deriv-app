@@ -18,7 +18,6 @@ const PaymentMethodAccordionHeader = ({ payment_method }: TPaymentMethodAccordio
                     className='payment-method-accordion-header__icon'
                     icon={`IcCashier${method}`}
                     data_testid={getSnakeCase(`IcCashier${method}`)}
-                    size={16}
                 />
                 <div className='payment-method-accordion-header__title'>
                     <Text color='prominent' size='xs'>
@@ -36,7 +35,7 @@ const PaymentMethodAccordionHeader = ({ payment_method }: TPaymentMethodAccordio
 
     return (
         <div className='payment-method-accordion-header__row'>
-            <Icon icon='IcCashierEwallet' data_testid={getSnakeCase('IcCashierEwallet')} size={16} />
+            <Icon icon='IcCashierEwallet' data_testid={getSnakeCase('IcCashierEwallet')} />
             <div className='payment-method-accordion-header__column'>
                 <Text color='prominent' size='xs'>
                     {payment_method.display_name}
