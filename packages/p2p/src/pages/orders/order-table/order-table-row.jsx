@@ -10,8 +10,8 @@ import { useStores } from 'Stores';
 import { DesktopWrapper, Icon, MobileWrapper, Table, Text } from '@deriv/components';
 import { formatMoney, routes } from '@deriv/shared';
 import { localize } from 'Components/i18next';
-import RatingCellRenderer from 'Components/rating-cell-renderer';
 import { useModalManagerContext } from 'Components/modal-manager/modal-manager-context';
+import RatingCellRenderer from './rating-cell-renderer';
 import './order-table-row.scss';
 
 const Title = ({ send_amount, currency, order_purchase_datetime, order_type }) => {

@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import { screen, render, fireEvent } from '@testing-library/react';
-import { mock_channel, mock_message } from 'Pages/orders/chat/__mocks__/mock-data';
+import { mock_channel, mock_message } from 'Pages/orders/chat/__mocks__/mock-chat-data';
 import { useStores } from 'Stores/index';
 import ChatMessage from 'Utils/chat-message';
 import ChatMessages from '../chat-messages';

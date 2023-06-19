@@ -190,6 +190,22 @@ export default class OrderStore {
         });
     }
 
+    disputeOrderRequest(id, dispute_reason) {
+        const { general_store, order_details_store } = this.root_store;
+        requestWS({
+            p2p_order_dispute: 1,
+            id,
+            dispute_reason,
+        }).then(response => {
+            if (response.error) {
+                order_details_store.setErrorMessage(response.error.message);
+            } else {
+                general_store.hideModal();
+                order_details_store.setErrorMessage('');
+            }
+        });
+    }
+
     getP2POrderList() {
         requestWS({ p2p_order_list: 1 }).then(response => {
             if (response) {
