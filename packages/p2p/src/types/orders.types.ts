@@ -62,9 +62,11 @@ export type TOrderNotification = {
 };
 
 export type TPaymentMethod = {
+    ID: string;
     display_name: string;
     is_enabled: boolean;
     method: string;
+    name: string;
     type: string;
     fields: {
         [key: string]: {

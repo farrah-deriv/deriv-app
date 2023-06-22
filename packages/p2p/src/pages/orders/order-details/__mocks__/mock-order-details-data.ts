@@ -1,7 +1,9 @@
 import { TPaymentMethod } from 'Types';
 
 export const mock_bank_transfer_payment_method: TPaymentMethod = {
+    ID: 'bank_transfer',
     display_name: 'Bank Transfer',
+    name: 'Bank Tranfer',
     fields: {
         account: {
             display_name: 'Account Number',
@@ -35,7 +37,9 @@ export const mock_bank_transfer_payment_method: TPaymentMethod = {
 };
 
 export const mock_ewallet_payment_method: TPaymentMethod = {
+    ID: 'skrill',
     display_name: 'Skrill',
+    name: 'Skrill',
     fields: {
         account: {
             display_name: 'Account Number',
