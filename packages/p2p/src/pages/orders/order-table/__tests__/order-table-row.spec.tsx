@@ -115,7 +115,7 @@ describe('<OrderTableRow />', () => {
             wrapper,
         });
         act(() => {
-            jest.advanceTimersByTime(2000);
+            jest.advanceTimersByTime(1000);
             expect(screen.getByText('00:00:00')).toBeInTheDocument();
         });
         jest.useRealTimers();
