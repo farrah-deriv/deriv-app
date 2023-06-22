@@ -1,20 +1,31 @@
 import React from 'react';
-import { useStore, observer } from '@deriv/stores';
-import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { useHistory } from 'react-router-dom';
-import { secondsToTimer } from 'Utils/date-time';
-import { createExtendedOrderDetails } from 'Utils/orders';
-import ServerTime from 'Utils/server-time';
-import { useStores } from 'Stores';
+import { useStore, observer } from '@deriv/stores';
 import { DesktopWrapper, Icon, MobileWrapper, Table, Text } from '@deriv/components';
 import { formatMoney, routes } from '@deriv/shared';
 import { localize } from 'Components/i18next';
 import { useModalManagerContext } from 'Components/modal-manager/modal-manager-context';
+import { useStores } from 'Stores';
+import { TOrderNotification } from 'Types';
+import { secondsToTimer } from 'Utils/date-time';
+import ExtendedOrderDetails, { createExtendedOrderDetails } from 'Utils/orders';
+import ServerTime from 'Utils/server-time';
 import RatingCellRenderer from './rating-cell-renderer';
 import './order-table-row.scss';
 
-const Title = ({ send_amount, currency, order_purchase_datetime, order_type }) => {
+type TTitleProps = {
+    send_amount: string;
+    currency: string;
+    order_purchase_datetime: string;
+    order_type: string;
+};
+
+type TOrderTableRowProps = {
+    row: ExtendedOrderDetails;
+};
+
+const Title = ({ send_amount, currency, order_purchase_datetime, order_type }: TTitleProps) => {
     return (
         <React.Fragment>
             <Text size='sm' color='prominent' line_height='xxs' weight='bold' as='p'>
@@ -27,25 +38,22 @@ const Title = ({ send_amount, currency, order_purchase_datetime, order_type }) =
     );
 };
 
-const OrderRow = ({ row: order }) => {
-    const getTimeLeft = time => {
+const OrderTableRow = ({ row: order }: TOrderTableRowProps) => {
+    const getTimeLeft = (time: number) => {
         const distance = ServerTime.getDistanceToServerTime(time);
         return {
             distance,
             label: distance < 0 ? localize('expired') : secondsToTimer(distance),
         };
     };
+
     const { general_store, order_store, sendbird_store } = useStores();
+    const { is_active_tab, server_time } = general_store;
     const {
         notifications: { removeNotificationByKey, removeNotificationMessage },
         client: { loginid },
     } = useStore();
-
     const [order_state, setOrderState] = React.useState(order); // Use separate state to force refresh when (FE-)expired.
-    const [is_timer_visible, setIsTimerVisible] = React.useState();
-    const should_show_order_details = React.useRef(true);
-    const { showModal, hideModal } = useModalManagerContext();
-
     const {
         account_currency,
         amount_display,
@@ -67,19 +75,22 @@ const OrderRow = ({ row: order }) => {
         should_highlight_success,
         status_string,
     } = order_state;
+    const [remaining_time, setRemainingTime] = React.useState(getTimeLeft(order_expiry_milliseconds).label);
+    const interval = React.useRef<NodeJS.Timeout | null>(null);
+    const should_show_order_details = React.useRef(true);
+    const history = useHistory();
+    const { showModal, hideModal } = useModalManagerContext();
 
+    const is_timer_visible = is_active_tab && remaining_time !== localize('expired');
     const offer_amount = `${amount_display} ${account_currency}`;
     const transaction_amount = `${Number(price_display).toFixed(2)} ${local_currency}`;
     const order_type = is_buy_order_for_user ? localize('Buy') : localize('Sell');
 
-    const [remaining_time, setRemainingTime] = React.useState(getTimeLeft(order_expiry_milliseconds).label);
-    const interval = React.useRef(null);
-
-    const history = useHistory();
-
-    const isOrderSeen = order_id => {
+    const isOrderSeen = (order_id: string) => {
         const { notifications } = general_store.getLocalStorageSettingsForLoginId();
-        return notifications.some(notification => notification.order_id === order_id && notification.is_seen === true);
+        return notifications.some(
+            (notification: TOrderNotification) => notification.order_id === order_id && notification.is_seen === true
+        );
     };
 
     const onRowClick = () => {
@@ -97,7 +108,9 @@ const OrderRow = ({ row: order }) => {
             return order_store.setOrderId(order.id);
         }
 
-        return () => {};
+        return () => {
+            // do nothing
+        };
     };
 
     const showRatingModal = () => {
@@ -130,32 +143,32 @@ const OrderRow = ({ row: order }) => {
         const countDownTimer = () => {
             const { distance, label } = getTimeLeft(order_expiry_milliseconds);
 
-            if (distance < 0) {
+            if (distance < 0 && interval.current) {
                 setRemainingTime(label);
-                setOrderState(createExtendedOrderDetails(order.order_details, loginid, general_store.server_time));
+                setOrderState(createExtendedOrderDetails(order.order_details, loginid, server_time));
                 clearInterval(interval.current);
-                setIsTimerVisible(false);
             } else {
                 setRemainingTime(label);
-                setIsTimerVisible(general_store.is_active_tab);
             }
         };
 
         interval.current = setInterval(countDownTimer, 1000);
-        return () => clearInterval(interval.current);
+        return () => {
+            if (interval.current) clearInterval(interval.current);
+        };
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     return (
         <React.Fragment>
-            <div onClick={onRowClick}>
+            <div data-testid='dt_order_table_row' onClick={onRowClick}>
                 <DesktopWrapper>
                     <Table.Row
                         className={classNames('order-table-row order-table-grid', {
-                            'order-table-grid--active': general_store.is_active_tab,
+                            'order-table-grid--active': is_active_tab,
                             'order-table-row--attention': !isOrderSeen(id),
                         })}
                     >
-                        <Table.Cell>{order_type}</Table.Cell>
+                        <Table.Cell align='left'>{order_type}</Table.Cell>
                         <Table.Cell>{id}</Table.Cell>
                         <Table.Cell>{other_user_details.name}</Table.Cell>
                         <Table.Cell>
@@ -176,7 +189,7 @@ const OrderRow = ({ row: order }) => {
                         <Table.Cell>{is_buy_order_for_user ? transaction_amount : offer_amount}</Table.Cell>
                         <Table.Cell>{is_buy_order_for_user ? offer_amount : transaction_amount}</Table.Cell>
                         <Table.Cell>
-                            {general_store.is_active_tab ? (
+                            {is_active_tab ? (
                                 <div className='order-table-row-time'>
                                     <Text align='center' size='xxs'>
                                         {remaining_time}
@@ -206,7 +219,7 @@ const OrderRow = ({ row: order }) => {
                     >
                         <Table.Cell
                             className={classNames('orders__mobile-header', {
-                                'order-table-grid--active': general_store.is_active_tab,
+                                'order-table-grid--active': is_active_tab,
                             })}
                         >
                             <Text
@@ -236,9 +249,10 @@ const OrderRow = ({ row: order }) => {
                                     {remaining_time}
                                 </Text>
                             )}
-                            {general_store.is_active_tab ? (
+                            {is_active_tab ? (
                                 <div className='orders__mobile-chat'>
                                     <Icon
+                                        data_testid='dt_chat_icon'
                                         icon='IcChat'
                                         height={15}
                                         width={16}
@@ -279,10 +293,4 @@ const OrderRow = ({ row: order }) => {
     );
 };
 
-OrderRow.propTypes = {
-    order: PropTypes.object,
-    row: PropTypes.object,
-    server_time: PropTypes.object,
-};
-
-export default observer(OrderRow);
+export default observer(OrderTableRow);

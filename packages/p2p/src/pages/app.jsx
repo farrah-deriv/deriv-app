@@ -48,7 +48,7 @@ const App = () => {
             setShouldShowProfile(true);
         }
 
-        ServerTime.init(general_store.server_time);
+        ServerTime.init();
 
         // force safari refresh on back/forward
         window.onpageshow = function (event) {
