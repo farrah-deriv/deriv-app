@@ -167,7 +167,7 @@ const OrderTableRow = ({ row: order }: TOrderTableRowProps) => {
                         'order-table-row--attention': !isOrderSeen(id),
                     })}
                 >
-                    <Table.Cell align='left'>{order_type}</Table.Cell>
+                    <Table.Cell>{order_type}</Table.Cell>
                     <Table.Cell>{id}</Table.Cell>
                     <Table.Cell>{other_user_details.name}</Table.Cell>
                     <Table.Cell>
