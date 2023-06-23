@@ -2,8 +2,10 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import RatingCellRenderer from '../rating-cell-renderer';
 
-// eslint-disable-next-line react/display-name
-jest.mock('Components/star-rating', () => () => <div>Star Rating</div>);
+jest.mock('Components/star-rating', () => {
+    const StarRating = () => <div>Star Rating</div>;
+    return StarRating;
+});
 
 describe('<RatingCellRenderer />', () => {
     it('should render rate button', () => {

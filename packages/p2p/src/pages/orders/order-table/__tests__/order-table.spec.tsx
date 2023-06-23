@@ -1,8 +1,8 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import OrderTable from '../order-table';
 import userEvent from '@testing-library/user-event';
 import { useStores } from 'Stores';
+import OrderTable from '../order-table';
 
 const mock_general_store = {
     active_notification_count: 0,
@@ -22,7 +22,7 @@ jest.mock('Stores', () => ({
 
 jest.mock('Pages/orders/order-table/order-table-content', () => jest.fn(() => <div>Order Table Content</div>));
 
-describe('<Orders/>', () => {
+describe('<OrderTable/>', () => {
     it('should render OrderTableContent', () => {
         render(<OrderTable />);
         expect(screen.getByText('Order Table Content')).toBeInTheDocument();

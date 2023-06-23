@@ -884,7 +884,9 @@ export default class GeneralStore extends BaseStore {
         user_settings.notifications = notifications;
 
         const p2p_settings = this.getLocalStorageSettings();
-        p2p_settings[this.external_stores?.client?.loginid] = user_settings;
+
+        const external_stores_client_loginid = this.external_stores?.client?.loginid;
+        if (external_stores_client_loginid) p2p_settings[external_stores_client_loginid] = user_settings;
 
         localStorage.setItem('p2p_settings', JSON.stringify(p2p_settings));
         window.dispatchEvent(new Event('storage'));

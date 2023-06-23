@@ -1,15 +1,16 @@
 import React from 'react';
 import { reaction } from 'mobx';
 import { Button, DesktopWrapper, Div100vhContainer, InfiniteDataList, Loading, MobileWrapper } from '@deriv/components';
+import { TRowRenderer } from '@deriv/components/src/components/data-list/data-list';
 import { observer, useStore } from '@deriv/stores';
 import { Localize, localize } from 'Components/i18next';
 import TableError from 'Components/section-error';
 import P2pEmpty from 'Components/p2p-empty';
-import OrderTableRow from 'Pages/orders/order-table/order-table-row';
-import OrderTableHeader from 'Pages/orders/order-table/order-table-header';
 import { useStores } from 'Stores';
 import { TOrder } from 'Types';
 import ExtendedOrderDetails, { createExtendedOrderDetails } from 'Utils/orders';
+import OrderTableHeader from './order-table-header';
+import OrderTableRow from './order-table-row';
 
 const ContentWrapper = ({ children }: React.PropsWithChildren<unknown>) => {
     return (
@@ -33,6 +34,10 @@ const OrderTableContent = () => {
         client: { loginid },
     } = useStore();
 
+    const orderTableRowRenderer = (row_props: TRowRenderer & { row: ExtendedOrderDetails }) => {
+        return <OrderTableRow {...row_props} />;
+    };
+
     React.useEffect(
         () =>
             reaction(
@@ -52,16 +57,13 @@ const OrderTableContent = () => {
     }
 
     if (api_error_message) {
-        return <TableError message={order_store.api_error_message} size='xs' className='section-error__table' />;
+        return <TableError message={api_error_message} size='xs' className='section-error__table' />;
     }
 
     if (orders.length) {
-        const modified_list = orders
-            .map((order: TOrder) => createExtendedOrderDetails(order, loginid, general_store.server_time))
-            // TODO: Get rid of this filter if confirmed that BE is sending correct data.
-            .filter((order: ExtendedOrderDetails) =>
-                general_store.is_active_tab ? order.is_active_order : order.is_inactive_order
-            );
+        const modified_list = orders.map((order: TOrder) =>
+            createExtendedOrderDetails(order, loginid, general_store.server_time)
+        );
 
         if (modified_list.length) {
             return (
@@ -72,7 +74,7 @@ const OrderTableContent = () => {
                         items={modified_list}
                         keyMapperFn={item => item.id}
                         loadMoreRowsFn={loadMoreOrders}
-                        rowRenderer={row_props => <OrderTableRow {...row_props} />}
+                        rowRenderer={orderTableRowRenderer}
                     />
                 </ContentWrapper>
             );

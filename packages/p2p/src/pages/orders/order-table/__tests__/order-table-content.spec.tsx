@@ -34,10 +34,6 @@ jest.mock('Stores', () => ({
     useStores: jest.fn(() => mock_p2p_store),
 }));
 
-jest.mock('react-virtualized', () => ({
-    ...jest.requireActual('react-virtualized'),
-}));
-
 const wrapper = ({ children }: { children: JSX.Element }) => (
     <StoreProvider store={mock_shared_store}>{children}</StoreProvider>
 );

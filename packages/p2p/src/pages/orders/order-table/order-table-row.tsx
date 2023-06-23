@@ -159,44 +159,111 @@ const OrderTableRow = ({ row: order }: TOrderTableRowProps) => {
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     return (
-        <React.Fragment>
-            <div data-testid='dt_order_table_row' onClick={onRowClick}>
-                <DesktopWrapper>
-                    <Table.Row
-                        className={classNames('order-table-row order-table-grid', {
+        <div data-testid='dt_order_table_row' onClick={onRowClick}>
+            <DesktopWrapper>
+                <Table.Row
+                    className={classNames('order-table-row order-table-grid', {
+                        'order-table-grid--active': is_active_tab,
+                        'order-table-row--attention': !isOrderSeen(id),
+                    })}
+                >
+                    <Table.Cell align='left'>{order_type}</Table.Cell>
+                    <Table.Cell>{id}</Table.Cell>
+                    <Table.Cell>{other_user_details.name}</Table.Cell>
+                    <Table.Cell>
+                        <Text
+                            as='div'
+                            size='xxs' // TODO: Change the font-size once design is ready
+                            weight='bold'
+                            className={classNames('order-table-status', {
+                                'order-table-status--danger': should_highlight_danger,
+                                'order-table-status--alert': should_highlight_alert,
+                                'order-table-status--success': should_highlight_success,
+                                'order-table-status--disabled': should_highlight_disabled,
+                            })}
+                        >
+                            {status_string}
+                        </Text>
+                    </Table.Cell>
+                    <Table.Cell>{is_buy_order_for_user ? transaction_amount : offer_amount}</Table.Cell>
+                    <Table.Cell>{is_buy_order_for_user ? offer_amount : transaction_amount}</Table.Cell>
+                    <Table.Cell>
+                        {is_active_tab ? (
+                            <div className='order-table-row-time'>
+                                <Text align='center' size='xxs'>
+                                    {remaining_time}
+                                </Text>
+                            </div>
+                        ) : (
+                            is_completed_order && (
+                                <RatingCellRenderer
+                                    has_review_details={has_review_details}
+                                    is_reviewable={is_order_reviewable}
+                                    rating={rating}
+                                    onClickUserRatingButton={() => {
+                                        should_show_order_details.current = false;
+                                        showRatingModal();
+                                    }}
+                                />
+                            )
+                        )}
+                    </Table.Cell>
+                </Table.Row>
+            </DesktopWrapper>
+            <MobileWrapper>
+                <Table.Row
+                    className={classNames('orders__mobile', {
+                        'orders__mobile--attention': !isOrderSeen(id),
+                    })}
+                >
+                    <Table.Cell
+                        className={classNames('orders__mobile-header', {
                             'order-table-grid--active': is_active_tab,
-                            'order-table-row--attention': !isOrderSeen(id),
                         })}
                     >
-                        <Table.Cell align='left'>{order_type}</Table.Cell>
-                        <Table.Cell>{id}</Table.Cell>
-                        <Table.Cell>{other_user_details.name}</Table.Cell>
-                        <Table.Cell>
+                        <Text
+                            as='div'
+                            align='center'
+                            size='xxs' // TODO: Change the font-size once design is ready
+                            weight='bold'
+                            className={classNames('orders__mobile-status', {
+                                'order-table-status--danger': should_highlight_danger,
+                                'order-table-status--alert': should_highlight_alert,
+                                'order-table-status--success': should_highlight_success,
+                                'order-table-status--disabled': should_highlight_disabled,
+                            })}
+                        >
+                            {status_string}
+                        </Text>
+                    </Table.Cell>
+                    <Table.Cell className='orders__mobile-header-right'>
+                        {is_timer_visible && (
                             <Text
-                                as='div'
-                                size='xxs' // TODO: Change the font-size once design is ready
-                                weight='bold'
-                                className={classNames('order-table-status', {
-                                    'order-table-status--danger': should_highlight_danger,
-                                    'order-table-status--alert': should_highlight_alert,
-                                    'order-table-status--success': should_highlight_success,
-                                    'order-table-status--disabled': should_highlight_disabled,
-                                })}
+                                size='xxs'
+                                color='prominent'
+                                align='center'
+                                line_height='l'
+                                className='orders__mobile-time'
                             >
-                                {status_string}
+                                {remaining_time}
                             </Text>
-                        </Table.Cell>
-                        <Table.Cell>{is_buy_order_for_user ? transaction_amount : offer_amount}</Table.Cell>
-                        <Table.Cell>{is_buy_order_for_user ? offer_amount : transaction_amount}</Table.Cell>
-                        <Table.Cell>
-                            {is_active_tab ? (
-                                <div className='order-table-row-time'>
-                                    <Text align='center' size='xxs'>
-                                        {remaining_time}
-                                    </Text>
-                                </div>
-                            ) : (
-                                is_completed_order && (
+                        )}
+                        {is_active_tab ? (
+                            <div className='orders__mobile-chat'>
+                                <Icon
+                                    data_testid='dt_chat_icon'
+                                    icon='IcChat'
+                                    height={15}
+                                    width={16}
+                                    onClick={() => {
+                                        sendbird_store.setShouldShowChatModal(true);
+                                        sendbird_store.setShouldShowChatOnOrders(true);
+                                    }}
+                                />
+                            </div>
+                        ) : (
+                            <div className='orders__mobile-chat'>
+                                {is_completed_order && (
                                     <RatingCellRenderer
                                         has_review_details={has_review_details}
                                         is_reviewable={is_order_reviewable}
@@ -206,90 +273,21 @@ const OrderTableRow = ({ row: order }: TOrderTableRowProps) => {
                                             showRatingModal();
                                         }}
                                     />
-                                )
-                            )}
-                        </Table.Cell>
-                    </Table.Row>
-                </DesktopWrapper>
-                <MobileWrapper>
-                    <Table.Row
-                        className={classNames('orders__mobile', {
-                            'orders__mobile--attention': !isOrderSeen(id),
-                        })}
-                    >
-                        <Table.Cell
-                            className={classNames('orders__mobile-header', {
-                                'order-table-grid--active': is_active_tab,
-                            })}
-                        >
-                            <Text
-                                as='div'
-                                align='center'
-                                size='xxs' // TODO: Change the font-size once design is ready
-                                weight='bold'
-                                className={classNames('orders__mobile-status', {
-                                    'order-table-status--danger': should_highlight_danger,
-                                    'order-table-status--alert': should_highlight_alert,
-                                    'order-table-status--success': should_highlight_success,
-                                    'order-table-status--disabled': should_highlight_disabled,
-                                })}
-                            >
-                                {status_string}
-                            </Text>
-                        </Table.Cell>
-                        <Table.Cell className='orders__mobile-header-right'>
-                            {is_timer_visible && (
-                                <Text
-                                    size='xxs'
-                                    color='prominent'
-                                    align='center'
-                                    line_height='l'
-                                    className='orders__mobile-time'
-                                >
-                                    {remaining_time}
-                                </Text>
-                            )}
-                            {is_active_tab ? (
-                                <div className='orders__mobile-chat'>
-                                    <Icon
-                                        data_testid='dt_chat_icon'
-                                        icon='IcChat'
-                                        height={15}
-                                        width={16}
-                                        onClick={() => {
-                                            sendbird_store.setShouldShowChatModal(true);
-                                            sendbird_store.setShouldShowChatOnOrders(true);
-                                        }}
-                                    />
-                                </div>
-                            ) : (
-                                <div className='orders__mobile-chat'>
-                                    {is_completed_order && (
-                                        <RatingCellRenderer
-                                            has_review_details={has_review_details}
-                                            is_reviewable={is_order_reviewable}
-                                            rating={rating}
-                                            onClickUserRatingButton={() => {
-                                                should_show_order_details.current = false;
-                                                showRatingModal();
-                                            }}
-                                        />
-                                    )}
-                                </div>
-                            )}
-                        </Table.Cell>
-                        <Table.Cell className='orders__mobile-title'>
-                            <Title
-                                send_amount={amount_display}
-                                currency={account_currency}
-                                order_purchase_datetime={order_purchase_datetime}
-                                order_type={order_type}
-                            />
-                        </Table.Cell>
-                    </Table.Row>
-                </MobileWrapper>
-            </div>
-        </React.Fragment>
+                                )}
+                            </div>
+                        )}
+                    </Table.Cell>
+                    <Table.Cell className='orders__mobile-title'>
+                        <Title
+                            send_amount={amount_display}
+                            currency={account_currency}
+                            order_purchase_datetime={order_purchase_datetime}
+                            order_type={order_type}
+                        />
+                    </Table.Cell>
+                </Table.Row>
+            </MobileWrapper>
+        </div>
     );
 };
 
