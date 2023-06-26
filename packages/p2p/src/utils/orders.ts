@@ -1,6 +1,6 @@
 import { toMoment } from '@deriv/shared';
+import { P2POrderInfo } from '@deriv/api-types';
 import { localize } from 'Components/i18next';
-import { TOrder } from 'Types';
 import { convertToMillis, getFormattedDateString } from 'Utils/date-time';
 import { buy_sell } from '../constants/buy-sell';
 import ServerTime from './server-time';
@@ -8,9 +8,13 @@ import ServerTime from './server-time';
 type TServerTime = typeof ServerTime;
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-interface ExtendedOrderDetails extends TOrder {}
+interface ExtendedOrderDetails extends P2POrderInfo {}
 class ExtendedOrderDetails {
-    constructor(public order_details: TOrder, public loginid: string | undefined, public server_time: TServerTime) {
+    constructor(
+        public order_details: P2POrderInfo,
+        public loginid: string | undefined,
+        public server_time: TServerTime
+    ) {
         Object.assign(this, order_details);
     }
 
@@ -359,7 +363,7 @@ class ExtendedOrderDetails {
 export default ExtendedOrderDetails;
 
 export const createExtendedOrderDetails = (
-    order_details: TOrder,
+    order_details: P2POrderInfo,
     loginid: string | undefined,
     server_time: TServerTime
 ) => new ExtendedOrderDetails(order_details, loginid, server_time);

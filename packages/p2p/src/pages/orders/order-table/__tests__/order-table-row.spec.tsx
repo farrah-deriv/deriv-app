@@ -86,7 +86,7 @@ describe('<OrderTableRow />', () => {
         render(<OrderTableRow row={extended_mock_order} />, {
             wrapper,
         });
-        expect(screen.getByText('Sell')).toBeInTheDocument();
+        expect(screen.getByText('Buy')).toBeInTheDocument();
         expect(screen.getByText('ORD123456')).toBeInTheDocument();
         expect(screen.getByText('John Doe')).toBeInTheDocument();
     });
@@ -177,7 +177,7 @@ describe('<OrderTableRow />', () => {
         render(<OrderTableRow row={extended_mock_order} />, {
             wrapper,
         });
-        expect(screen.getByText('Sell 0.50 USD')).toBeInTheDocument();
+        expect(screen.getByText('Buy 0.50 USD')).toBeInTheDocument();
     });
 
     it('should show chat screen if chat icon is clicked', () => {

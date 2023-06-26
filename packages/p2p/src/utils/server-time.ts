@@ -1,6 +1,6 @@
 import moment from 'moment';
-import { convertToMillis } from 'Utils/date-time';
 import { WS } from '@deriv/shared';
+import { convertToMillis } from 'Utils/date-time';
 import { PromiseClass } from './utility';
 
 let clock_started = false;
@@ -9,14 +9,14 @@ let server_time: moment.Moment,
     performance_request_time: number,
     get_time_interval: ReturnType<typeof setInterval>,
     update_time_interval: ReturnType<typeof setInterval>,
-    onTimeUpdated: VoidFunction;
+    onTimeUpdated: () => void;
 
 const requestTime = () => {
     performance_request_time = performance.now();
     WS.send({ time: 1 }).then(timeCounter);
 };
 
-const init = (fncTimeUpdated?: VoidFunction) => {
+const init = (fncTimeUpdated?: () => void) => {
     if (!clock_started) {
         if (fncTimeUpdated) {
             onTimeUpdated = fncTimeUpdated;
@@ -28,7 +28,7 @@ const init = (fncTimeUpdated?: VoidFunction) => {
     }
 };
 
-export const timeCounter = (response: { error: unknown; time: number }) => {
+export const timeCounter = (response: { error: Error; time: number }) => {
     if (response.error) return;
 
     if (!clock_started) {
@@ -52,7 +52,7 @@ export const timeCounter = (response: { error: unknown; time: number }) => {
         }
     };
     updateTime();
-    pending.resolve?.();
+    pending.resolve?.('');
 
     update_time_interval = setInterval(updateTime, 1000);
 };

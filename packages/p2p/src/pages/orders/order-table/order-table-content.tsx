@@ -1,5 +1,6 @@
 import React from 'react';
 import { reaction } from 'mobx';
+import { P2POrderInfo } from '@deriv/api-types';
 import { Button, DesktopWrapper, Div100vhContainer, InfiniteDataList, Loading, MobileWrapper } from '@deriv/components';
 import { TRowRenderer } from '@deriv/components/src/components/data-list/data-list';
 import { observer, useStore } from '@deriv/stores';
@@ -7,7 +8,6 @@ import { Localize, localize } from 'Components/i18next';
 import TableError from 'Components/section-error';
 import P2pEmpty from 'Components/p2p-empty';
 import { useStores } from 'Stores';
-import { TOrder } from 'Types';
 import ExtendedOrderDetails, { createExtendedOrderDetails } from 'Utils/orders';
 import OrderTableHeader from './order-table-header';
 import OrderTableRow from './order-table-row';
@@ -61,7 +61,7 @@ const OrderTableContent = () => {
     }
 
     if (orders.length) {
-        const modified_list = orders.map((order: TOrder) =>
+        const modified_list = orders.map((order: P2POrderInfo) =>
             createExtendedOrderDetails(order, loginid, general_store.server_time)
         );
 
