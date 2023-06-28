@@ -17,7 +17,7 @@ jest.mock('Stores', () => ({
     })),
 }));
 
-jest.mock('Utils/server-time.js', () => ({
+jest.mock('Utils/server-time', () => ({
     getDistanceToServerTime: jest.fn().mockReturnValue(8),
 }));
 

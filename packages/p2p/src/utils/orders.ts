@@ -1,18 +1,21 @@
 import { toMoment } from '@deriv/shared';
+import { P2POrderInfo } from '@deriv/api-types';
 import { localize } from 'Components/i18next';
 import { convertToMillis, getFormattedDateString } from 'Utils/date-time';
 import { buy_sell } from '../constants/buy-sell';
+import ServerTime from './server-time';
 
-export default class ExtendedOrderDetails {
-    constructor(order_details, loginid, server_time) {
-        this.order_details = order_details;
-        this.loginid = loginid;
-        this.server_time = server_time;
+type TServerTime = typeof ServerTime;
 
-        // Assign all original props to this.
-        Object.keys(this.order_details).forEach(key => {
-            this[key] = order_details[key];
-        });
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+interface ExtendedOrderDetails extends P2POrderInfo {}
+class ExtendedOrderDetails {
+    constructor(
+        public order_details: P2POrderInfo,
+        public loginid: string | undefined,
+        public server_time: TServerTime
+    ) {
+        Object.assign(this, order_details);
     }
 
     // Order statuses
@@ -116,13 +119,13 @@ export default class ExtendedOrderDetails {
     // as an extra check to ensure orders look expired on FE.
     get has_timer_expired() {
         const server_time_moment = toMoment(this.server_time.get());
-        const expiry_time_moment = toMoment(this.order_details.expiry_time);
+        const expiry_time_moment = toMoment(this.order_expiry_milliseconds);
         return server_time_moment.isAfter(expiry_time_moment);
     }
 
     get remaining_seconds() {
-        const server_time_moment = this.server_time.get();
-        const expiry_time_moment = toMoment(this.order_details.expiry_time);
+        const server_time_moment = toMoment(this.server_time.get());
+        const expiry_time_moment = toMoment(this.order_expiry_milliseconds);
         return expiry_time_moment.diff(server_time_moment, 'seconds');
     }
 
@@ -357,5 +360,10 @@ export default class ExtendedOrderDetails {
     }
 }
 
-export const createExtendedOrderDetails = (order_details, loginid, server_time) =>
-    new ExtendedOrderDetails(order_details, loginid, server_time);
+export default ExtendedOrderDetails;
+
+export const createExtendedOrderDetails = (
+    order_details: P2POrderInfo,
+    loginid: string | undefined,
+    server_time: TServerTime
+) => new ExtendedOrderDetails(order_details, loginid, server_time);

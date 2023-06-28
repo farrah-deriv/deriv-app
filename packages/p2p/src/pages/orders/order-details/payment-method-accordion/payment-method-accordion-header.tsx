@@ -9,7 +9,7 @@ type TPaymentMethodAccordionHeaderProps = {
 };
 
 const PaymentMethodAccordionHeader = ({ payment_method }: TPaymentMethodAccordionHeaderProps) => {
-    const method = payment_method.display_name.replace(/\s|-/gm, '');
+    const method = payment_method.display_name?.replace(/\s|-/gm, '');
 
     if (method === 'BankTransfer' || method === 'Other') {
         return (
