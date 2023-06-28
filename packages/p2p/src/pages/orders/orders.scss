@@ -77,13 +77,13 @@
             }
         }
         &-title {
-            align-items: start;
+            align-items: flex-start;
             display: flex;
             flex-direction: column;
             grid-area: title;
             height: 4.9rem;
             justify-content: space-around;
-            justify-self: start;
+            justify-self: flex-start;
         }
 
         &-chat {

@@ -1,6 +1,6 @@
 import React from 'react';
 import { action, computed, observable, reaction, makeObservable } from 'mobx';
-import { get, init, timePromise } from '../../../cashier/src/utils/server_time';
+import ServerTime from 'Utils/server-time';
 import { isEmptyObject, isMobile, toMoment } from '@deriv/shared';
 import BaseStore from 'Stores/base_store';
 import { localize, Localize } from 'Components/i18next';
@@ -64,11 +64,7 @@ export default class GeneralStore extends BaseStore {
     ws_subscriptions = {};
     service_token_timeout;
 
-    server_time = {
-        get,
-        init,
-        timePromise,
-    };
+    server_time = ServerTime;
 
     constructor(root_store) {
         // TODO: [mobx-undecorate] verify the constructor arguments and the arguments of this automatically generated super call
@@ -268,7 +264,7 @@ export default class GeneralStore extends BaseStore {
     };
 
     getLocalStorageSettingsForLoginId() {
-        const local_storage_settings = this.getLocalStorageSettings()[this.external_stores.client.loginid];
+        const local_storage_settings = this.getLocalStorageSettings()[this.external_stores?.client?.loginid];
 
         if (isEmptyObject(local_storage_settings)) {
             return { is_cached: false, notifications: [] };
@@ -888,7 +884,9 @@ export default class GeneralStore extends BaseStore {
         user_settings.notifications = notifications;
 
         const p2p_settings = this.getLocalStorageSettings();
-        p2p_settings[this.external_stores.client.loginid] = user_settings;
+
+        const external_stores_client_loginid = this.external_stores?.client?.loginid;
+        if (external_stores_client_loginid) p2p_settings[external_stores_client_loginid] = user_settings;
 
         localStorage.setItem('p2p_settings', JSON.stringify(p2p_settings));
         window.dispatchEvent(new Event('storage'));

@@ -123,7 +123,7 @@ jest.mock('Pages/orders/order-details/order-info-block', () => jest.fn(() => <di
 
 describe('<OrderDetails/>', () => {
     it('should render component with loss of funds warning banner', () => {
-        useStores.mockReturnValueOnce({
+        (useStores as jest.Mock).mockReturnValueOnce({
             order_store: {
                 ...mock_order_store,
                 order_information: {
@@ -145,7 +145,7 @@ describe('<OrderDetails/>', () => {
         ).toBeInTheDocument();
     });
     it('should render success message when highlight success is true', () => {
-        useStores.mockReturnValueOnce({
+        (useStores as jest.Mock).mockReturnValueOnce({
             order_store: {
                 ...mock_order_store,
                 order_information: { ...mock_order_info, should_highlight_success: true },
@@ -161,7 +161,7 @@ describe('<OrderDetails/>', () => {
         expect(screen.getByText('Result str')).toBeInTheDocument();
     });
     it('should display footer info when show_order_footer is set', () => {
-        useStores.mockReturnValueOnce({
+        (useStores as jest.Mock).mockReturnValueOnce({
             order_store: {
                 ...mock_order_store,
                 order_information: { ...mock_order_info, should_show_order_footer: true },
@@ -177,7 +177,7 @@ describe('<OrderDetails/>', () => {
         expect(screen.getByText('Order details footer')).toBeInTheDocument();
     });
     it('should display formatted currency when the order is pending', () => {
-        useStores.mockReturnValueOnce({
+        (useStores as jest.Mock).mockReturnValueOnce({
             order_store: {
                 ...mock_order_store,
                 order_information: { ...mock_order_info, is_pending_order: true },
@@ -193,7 +193,7 @@ describe('<OrderDetails/>', () => {
         expect(screen.getByText('40.00 AED')).toBeInTheDocument();
     });
     it('should render Chat component if should_show_chat_on_orders is enabled', () => {
-        useStores.mockReturnValueOnce({
+        (useStores as jest.Mock).mockReturnValueOnce({
             order_store: {
                 ...mock_order_store,
             },
@@ -208,7 +208,7 @@ describe('<OrderDetails/>', () => {
         expect(screen.getByText('Chat section')).toBeInTheDocument();
     });
     it('should display Buy section when is_buy_order_for_user flag is enabled', () => {
-        useStores.mockReturnValueOnce({
+        (useStores as jest.Mock).mockReturnValueOnce({
             order_store: {
                 ...mock_order_store,
                 order_information: { ...mock_order_info, is_buy_order_for_user: true },
@@ -225,7 +225,7 @@ describe('<OrderDetails/>', () => {
     });
 
     it('should show rating modal when rate button is clicked', () => {
-        useStores.mockReturnValueOnce({
+        (useStores as jest.Mock).mockReturnValueOnce({
             order_store: {
                 ...mock_order_store,
                 order_information: {
@@ -259,7 +259,7 @@ describe('<OrderDetails/>', () => {
         jest.useRealTimers();
     });
     it('should set chat channel onmount if chat_channel_url is present', () => {
-        useStores.mockReturnValueOnce({
+        (useStores as jest.Mock).mockReturnValueOnce({
             order_store: {
                 ...mock_order_store,
                 order_information: { ...mock_order_info },
@@ -277,7 +277,7 @@ describe('<OrderDetails/>', () => {
     });
 
     it('should create chat channel onmount if chat_channel_url is not present', () => {
-        useStores.mockReturnValueOnce({
+        (useStores as jest.Mock).mockReturnValueOnce({
             order_store: {
                 ...mock_order_store,
                 order_information: { ...mock_order_info, chat_channel_url: null },
@@ -295,7 +295,7 @@ describe('<OrderDetails/>', () => {
     });
 
     it('should show email link expired modal if email is expired', () => {
-        useStores.mockReturnValueOnce({
+        (useStores as jest.Mock).mockReturnValueOnce({
             order_store: {
                 ...mock_order_store,
                 error_code: null,
@@ -316,7 +316,7 @@ describe('<OrderDetails/>', () => {
     });
 
     it('should hide modal when the order is expired', () => {
-        useStores.mockReturnValueOnce({
+        (useStores as jest.Mock).mockReturnValueOnce({
             order_store: {
                 ...mock_order_store,
                 order_information: { ...mock_order_info, status_string: 'Expired' },
@@ -337,7 +337,7 @@ describe('<OrderDetails/>', () => {
     });
 
     it('should show order remaining time', () => {
-        useStores.mockReturnValueOnce({
+        (useStores as jest.Mock).mockReturnValueOnce({
             order_store: {
                 ...mock_order_store,
                 order_information: {
@@ -422,7 +422,7 @@ describe('<OrderDetails/>', () => {
     });
 
     it('should show payment details and be able to expand and collapse payment methods accordion', async () => {
-        useStores.mockReturnValue({
+        (useStores as jest.Mock).mockReturnValue({
             order_store: {
                 ...mock_order_store,
                 has_order_payment_method_details: true,

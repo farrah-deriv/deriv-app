@@ -2,7 +2,7 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { useStores } from 'Stores';
 import { useSafeState } from '@deriv/components';
-import Orders from '../orders.jsx';
+import Orders from '../orders';
 
 jest.mock('Stores', () => ({
     ...jest.requireActual('Stores'),
@@ -24,14 +24,16 @@ jest.mock('@deriv/components', () => ({
     useSafeState: jest.fn().mockReturnValue([{}, jest.fn()]),
 }));
 
-jest.mock('Pages/orders/order-table/order-table.jsx', () => jest.fn(() => <div>Order Table</div>));
+jest.mock('Pages/orders/order-table', () => jest.fn(() => <div>Order Table</div>));
 
 jest.mock('Pages/orders/order-details', () => jest.fn(() => <div>Order Details</div>));
 
 describe('<Orders/>', () => {
     it('should invoke setup methods on component load', () => {
         const { order_store } = useStores();
-        const [, forceRerender] = useSafeState();
+        const [, forceRerender] = useSafeState(null, () => {
+            // do nothing
+        });
         render(<Orders />);
 
         expect(order_store.setForceRerenderOrders).toHaveBeenCalledWith(forceRerender);
@@ -46,7 +48,7 @@ describe('<Orders/>', () => {
     });
 
     it('should display the order details for a particular ', () => {
-        useStores.mockImplementation(() => ({
+        (useStores as jest.Mock).mockImplementationOnce(() => ({
             order_store: {
                 order_id: null,
                 onOrderIdUpdate: jest.fn(),
