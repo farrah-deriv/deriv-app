@@ -7,7 +7,7 @@ export type TOrderNotification = {
 export type TPaymentMethod = {
     display_name?: string;
     fields: {
-        [k: string]: {
+        [key: string]: {
             display_name: string;
             required: number;
             type: 'text' | 'memo';
