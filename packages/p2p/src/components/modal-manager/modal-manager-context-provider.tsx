@@ -1,15 +1,52 @@
 import React from 'react';
-import { useStores } from 'Stores';
+import { useStores } from 'Stores/index';
 import { ModalManagerContext } from './modal-manager-context';
 import { isDesktop } from '@deriv/shared';
+import type { ModalKeys } from 'Constants/modals'
 
-const ModalManagerContextProvider = props => {
-    const [active_modal, setActiveModal] = React.useState({});
-    const [previous_modal, setPreviousModal] = React.useState({});
+type TModalManagerContextProviderProps = {
+    children: React.ReactElement
+}
+
+export type TModalProps = {
+    [key: string]: any
+}
+
+export type TModal = {
+    key:  ModalKeys,
+    props: TModalProps
+}
+
+export type TShowModalOptions = {
+    should_stack_modal?: boolean;
+}
+
+export type THideModalOptions = {
+    should_save_form_history?: boolean
+    should_hide_all_modals?: boolean;
+}
+
+export type TState = {
+    hideModal: (options: THideModalOptions) => void
+    is_modal_open: boolean
+    isCurrentModal:  (...keys: ModalKeys[]) => boolean
+    modal: TModal | null
+    modal_props: {[key: string]: any}
+    previous_modal: TModal | null
+    stacked_modal: TModal | null
+    showModal: (modal: TModal, options?: TShowModalOptions) => void
+    useRegisterModalProps: (modals: TModal | TModal[]) => void
+}
+
+
+
+const ModalManagerContextProvider = (props: TModalManagerContextProviderProps) => {
+    const [active_modal, setActiveModal] = React.useState<TModal | null>(null);
+    const [previous_modal, setPreviousModal] = React.useState<TModal | null>(null);
     // for mobile, modals are stacked and not shown alternatingly one by one
-    const [stacked_modal, setStackedModal] = React.useState({});
+    const [stacked_modal, setStackedModal] = React.useState<TModal | null>(null);
     const [is_modal_open, setIsModalOpen] = React.useState(false);
-    const [modal_props, setModalProps] = React.useState(new Map());
+    const [modal_props, setModalProps] = React.useState<Map<ModalKeys, TModalProps>>(new Map());
     const { general_store } = useStores();
 
     /**
@@ -22,8 +59,8 @@ const ModalManagerContextProvider = props => {
      *
      * @param {Object|Object[]} modals - list of object modals to set props, each modal object must contain a 'key' attribute and 'props' attribute
      */
-    const useRegisterModalProps = modals => {
-        const registered_modals = React.useRef([]);
+    const useRegisterModalProps = (modals: TModal | TModal[]) => {
+        const registered_modals = React.useRef<TModal[] >([]);
 
         const registerModals = React.useCallback(() => {
             if (Array.isArray(modals)) {
@@ -54,13 +91,14 @@ const ModalManagerContextProvider = props => {
      *
      * @param {...string} keys - the modal keys to check if the current visible modal matches it
      */
-    const isCurrentModal = (...keys) => keys.includes(active_modal.key);
+    const isCurrentModal = (...keys: ModalKeys[]) => active_modal ? keys.includes(active_modal.key) : false;
 
-    const showModal = (modal, options = { should_stack_modal: false }) => {
+    const showModal = (modal: TModal, options?: TShowModalOptions) => {
+        if (!options) options = {should_stack_modal: false}
         if (isDesktop() || options.should_stack_modal) {
             setPreviousModal(active_modal);
             setActiveModal(modal);
-        } else if (Object.keys(active_modal).length === 0) {
+        } else if (active_modal && Object.keys(active_modal).length === 0) {
             setActiveModal(modal);
         } else {
             setStackedModal(modal);
@@ -78,7 +116,7 @@ const ModalManagerContextProvider = props => {
      * - **should_save_form_history**: `false` by default. If set to `true`, form values in modals that has a form with `ModalForm` component
      * will be saved when the modal is hidden and restored when modal is shown again.
      */
-    const hideModal = (options = {}) => {
+    const hideModal = (options: THideModalOptions) => {
         const { should_save_form_history = false, should_hide_all_modals = false } = options;
 
         if (should_save_form_history) {
@@ -90,24 +128,24 @@ const ModalManagerContextProvider = props => {
 
         if (isDesktop()) {
             if (should_hide_all_modals) {
-                setPreviousModal({});
-                setActiveModal({});
+                setPreviousModal(null);
+                setActiveModal(null);
                 setIsModalOpen(false);
             } else if (previous_modal) {
                 setActiveModal(previous_modal);
-                setPreviousModal({});
+                setPreviousModal(null);
             } else {
-                setActiveModal({});
+                setActiveModal(null);
                 setIsModalOpen(false);
             }
-        } else if (Object.keys(stacked_modal).length !== 0) {
+        } else if (stacked_modal && Object.keys(stacked_modal).length !== 0) {
             if (should_hide_all_modals) {
-                setActiveModal({});
+                setActiveModal(null);
                 setIsModalOpen(false);
             }
-            setStackedModal({});
+            setStackedModal(null);
         } else {
-            setActiveModal({});
+            setActiveModal(null);
             setIsModalOpen(false);
         }
     };
@@ -117,7 +155,7 @@ const ModalManagerContextProvider = props => {
     general_store.modal = active_modal;
     general_store.showModal = showModal;
 
-    const state = {
+    const state: TState = {
         hideModal,
         is_modal_open,
         isCurrentModal,

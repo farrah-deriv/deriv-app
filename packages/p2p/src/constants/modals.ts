@@ -1,6 +1,6 @@
 import React from 'react';
 
-export const modals = {
+export const Modals = {
     AdErrorTooltipModal: React.lazy(() =>
         import(
             /* webpackChunkName: "ad-error-tooltip-modal" */ 'Components/modal-manager/modals/ad-error-tooltip-modal'
@@ -128,3 +128,8 @@ export const modals = {
         import(/* webpackChunkName: "recommended-modal" */ 'Components/modal-manager/modals/recommended-modal')
     ),
 };
+
+
+export type ModalKeys = keyof typeof Modals
+export type ModalProps<T extends ModalKeys> = Parameters<(typeof Modals)[T]>[0]
+

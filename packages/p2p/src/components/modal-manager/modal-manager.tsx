@@ -1,15 +1,16 @@
 import React from 'react';
-import { modals } from 'Constants/modals';
+import { Modals } from 'Constants/modals';
 import { useModalManagerContext } from './modal-manager-context';
+import { TModal, TState } from './modal-manager-context-provider';
 
 const ModalManager = () => {
-    const { modal, modal_props, stacked_modal } = useModalManagerContext();
+    const { modal, modal_props, stacked_modal } = useModalManagerContext() as TState;
 
-    const { key } = modal;
-    const Modal = modals[key];
-    const StackedModal = modals[stacked_modal?.key];
+    const { key } = modal as TModal;
+    const Modal = Modals[key];
+    const StackedModal = stacked_modal ? Modals[stacked_modal.key] : null;
 
-    const getModalProps = current_modal => {
+    const getModalProps = (current_modal: TModal) => {
         if (current_modal?.props && Object.keys(current_modal.props).length > 0) {
             // if props was provided to the argument and it was also already initialised using useRegisterModalProps,
             // merge the 2 props together and update latest prop values with the passed prop argument
@@ -27,11 +28,11 @@ const ModalManager = () => {
         return {};
     };
 
-    if (Modal)
+    if (Modal && modal)
         return (
             <React.Suspense fallback={null}>
                 <Modal {...getModalProps(modal)} />
-                {StackedModal && (
+                {StackedModal && stacked_modal && (
                     <React.Suspense fallback={null}>
                         <StackedModal {...getModalProps(stacked_modal)} />
                     </React.Suspense>
