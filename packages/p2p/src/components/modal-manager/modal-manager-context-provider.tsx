@@ -2,51 +2,53 @@ import React from 'react';
 import { useStores } from 'Stores/index';
 import { ModalManagerContext } from './modal-manager-context';
 import { isDesktop } from '@deriv/shared';
-import type { ModalKeys } from 'Constants/modals'
+import type { TModalKeys, TModalProps } from 'Constants/modals';
 
-type TModalManagerContextProviderProps = {
-    children: React.ReactElement
-}
+/**
+ * TModal type represents a specific modal type, with its prop typing constrained to that specific modal based on its key.
+ */
+export type TModal<T extends TModalKeys> = {
+    key: T;
+    props: TModalProps[T];
+};
 
-export type TModalProps = {
-    [key: string]: any
-}
+/**
+ * TModalVariants type represents the union of all possible modal keys and prop types.
+ * This type is necessary for typing a function or generic argument that could accept any type of modal.
+ */
+type TModalVariants = {
+    key: TModalKeys;
+    props: TModalProps[TModalKeys];
+};
 
-export type TModal = {
-    key:  ModalKeys,
-    props: TModalProps
-}
+export type TModalManagerContext = {
+    hideModal: (options: THideModalOptions) => void;
+    is_modal_open: boolean;
+    isCurrentModal: (...keys: TModalKeys[]) => boolean;
+    modal_props: Map<TModalKeys, TModalProps[TModalKeys]>;
+    modal: TModalVariants | null;
+    previous_modal: TModalVariants | null;
+    showModal: <T extends TModalKeys>(modal: TModal<T>, options?: TShowModalOptions) => void;
+    stacked_modal: TModalVariants | null;
+    useRegisterModalProps: <T extends TModalKeys>(modals: TModal<T> | TModalVariants[]) => void;
+};
 
-export type TShowModalOptions = {
+type TShowModalOptions = {
     should_stack_modal?: boolean;
-}
+};
 
-export type THideModalOptions = {
-    should_save_form_history?: boolean
+type THideModalOptions = {
+    should_save_form_history?: boolean;
     should_hide_all_modals?: boolean;
-}
+};
 
-export type TState = {
-    hideModal: (options: THideModalOptions) => void
-    is_modal_open: boolean
-    isCurrentModal:  (...keys: ModalKeys[]) => boolean
-    modal: TModal | null
-    modal_props: {[key: string]: any}
-    previous_modal: TModal | null
-    stacked_modal: TModal | null
-    showModal: (modal: TModal, options?: TShowModalOptions) => void
-    useRegisterModalProps: (modals: TModal | TModal[]) => void
-}
-
-
-
-const ModalManagerContextProvider = (props: TModalManagerContextProviderProps) => {
-    const [active_modal, setActiveModal] = React.useState<TModal | null>(null);
-    const [previous_modal, setPreviousModal] = React.useState<TModal | null>(null);
+const ModalManagerContextProvider = (props: React.PropsWithChildren<unknown>) => {
+    const [active_modal, setActiveModal] = React.useState<TModalVariants | null>(null);
+    const [previous_modal, setPreviousModal] = React.useState<TModalVariants | null>(null);
     // for mobile, modals are stacked and not shown alternatingly one by one
-    const [stacked_modal, setStackedModal] = React.useState<TModal | null>(null);
+    const [stacked_modal, setStackedModal] = React.useState<TModalVariants | null>(null);
     const [is_modal_open, setIsModalOpen] = React.useState(false);
-    const [modal_props, setModalProps] = React.useState<Map<ModalKeys, TModalProps>>(new Map());
+    const [modal_props, setModalProps] = React.useState<Map<TModalKeys, TModalProps[TModalKeys]>>(new Map());
     const { general_store } = useStores();
 
     /**
@@ -57,10 +59,10 @@ const ModalManagerContextProvider = (props: TModalManagerContextProviderProps) =
      * For instance, calling `showModal({key: ..., props: ... })` in a store action where the props can't be passed to the action, use this hook to pass the props beforehand
      * and simply call `showModal({key: ...})` without the need to specify the props, since its already passed using this hook to the modal manager.
      *
-     * @param {Object|Object[]} modals - list of object modals to set props, each modal object must contain a 'key' attribute and 'props' attribute
+     * @param {TModal<T>|TModalVariants[]} modals - list of object modals to set props, each modal object must contain a 'key' attribute and 'props' attribute
      */
-    const useRegisterModalProps = (modals: TModal | TModal[]) => {
-        const registered_modals = React.useRef<TModal[] >([]);
+    const useRegisterModalProps = <T extends TModalKeys>(modals: TModal<T> | TModalVariants[]) => {
+        const registered_modals = React.useRef<TModalVariants[]>([]);
 
         const registerModals = React.useCallback(() => {
             if (Array.isArray(modals)) {
@@ -91,10 +93,11 @@ const ModalManagerContextProvider = (props: TModalManagerContextProviderProps) =
      *
      * @param {...string} keys - the modal keys to check if the current visible modal matches it
      */
-    const isCurrentModal = (...keys: ModalKeys[]) => active_modal ? keys.includes(active_modal.key) : false;
+    const isCurrentModal = (...keys: TModalKeys[]) => (active_modal ? keys.includes(active_modal.key) : false);
 
-    const showModal = (modal: TModal, options?: TShowModalOptions) => {
-        if (!options) options = {should_stack_modal: false}
+    const showModal = <T extends TModalKeys>(modal: TModal<T>, options?: TShowModalOptions) => {
+        // eslint-disable-next-line no-param-reassign
+        if (!options) options = { should_stack_modal: false };
         if (isDesktop() || options.should_stack_modal) {
             setPreviousModal(active_modal);
             setActiveModal(modal);
@@ -116,8 +119,11 @@ const ModalManagerContextProvider = (props: TModalManagerContextProviderProps) =
      * - **should_save_form_history**: `false` by default. If set to `true`, form values in modals that has a form with `ModalForm` component
      * will be saved when the modal is hidden and restored when modal is shown again.
      */
-    const hideModal = (options: THideModalOptions) => {
-        const { should_save_form_history = false, should_hide_all_modals = false } = options;
+    const hideModal = (options?: THideModalOptions) => {
+        // eslint-disable-next-line no-param-reassign
+        if (!options) options = { should_save_form_history: false, should_hide_all_modals: false };
+
+        const { should_save_form_history, should_hide_all_modals } = options;
 
         if (should_save_form_history) {
             general_store.saveFormState();
@@ -155,7 +161,7 @@ const ModalManagerContextProvider = (props: TModalManagerContextProviderProps) =
     general_store.modal = active_modal;
     general_store.showModal = showModal;
 
-    const state: TState = {
+    const state: TModalManagerContext = {
         hideModal,
         is_modal_open,
         isCurrentModal,
@@ -166,10 +172,6 @@ const ModalManagerContextProvider = (props: TModalManagerContextProviderProps) =
         showModal,
         useRegisterModalProps,
     };
-
-    general_store.showModal = showModal;
-    general_store.hideModal = hideModal;
-    general_store.modal = active_modal;
 
     return <ModalManagerContext.Provider value={state}>{props.children}</ModalManagerContext.Provider>;
 };

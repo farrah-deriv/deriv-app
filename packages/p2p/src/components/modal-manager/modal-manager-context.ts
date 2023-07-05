@@ -1,14 +1,12 @@
 import React from 'react';
-import {TState} from "./modal-manager-context-provider"
+import { TModalManagerContext } from './modal-manager-context-provider';
 
-export const ModalManagerContext = React.createContext<TState | null>(null);
+export const ModalManagerContext = React.createContext<TModalManagerContext | null>(null);
 
 export const useModalManagerContext = () => {
-    const context =  React.useContext(ModalManagerContext);
+    const context = React.useContext(ModalManagerContext);
     if (!context) {
-        throw new Error(
-            "useModalManagerContext has to be used within <ModalManagerContext.Provider>"
-          );
+        throw new Error('useModalManagerContext should be used within <ModalManagerContext.Provider>.');
     }
     return context;
 };
