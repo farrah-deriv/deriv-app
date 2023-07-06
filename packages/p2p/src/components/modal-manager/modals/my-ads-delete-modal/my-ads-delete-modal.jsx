@@ -11,6 +11,8 @@ const MyAdsDeleteModal = () => {
     const { my_ads_store } = useStores();
     const { hideModal, is_modal_open, showModal } = useModalManagerContext();
 
+    console.log('in my ads delete modal');
+
     const onClickCancel = () => {
         my_ads_store.setDeleteErrorMessage('');
         my_ads_store.setSelectedAdId('');
