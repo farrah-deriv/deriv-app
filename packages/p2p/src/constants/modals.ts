@@ -157,6 +157,7 @@ export const Modals = {
 export type TModals = typeof Modals;
 export type TModalKeys = keyof TModals;
 export type TModalProps = {
-    // eslint-disable-next-line
-    [T in TModalKeys]: Parameters<TModals[T]>[0] extends { [key: string]: any } ? Parameters<TModals[T]>[0] : {};
+    [T in TModalKeys]: Parameters<TModals[T]>[0] extends { [key: string]: any }
+        ? Parameters<TModals[T]>[0]
+        : Record<string, never>;
 };

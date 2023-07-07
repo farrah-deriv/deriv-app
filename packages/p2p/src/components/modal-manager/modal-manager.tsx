@@ -5,8 +5,6 @@ import { TModal } from './modal-manager-context-provider';
 
 type LazyModal = React.LazyExoticComponent<React.ComponentType<TModalProps[TModalKeys]>>;
 
-
-
 const ModalManager = () => {
     const { modal, modal_props, stacked_modal } = useModalManagerContext();
     // type guard for nullish modal value, exit early
@@ -15,7 +13,7 @@ const ModalManager = () => {
     const { key } = modal;
     const Modal = Modals[key] as LazyModal;
 
-    const StackedModal = stacked_modal ? Modals[stacked_modal.key] as LazyModal : null;
+    const StackedModal = stacked_modal ? (Modals[stacked_modal.key] as LazyModal) : null;
 
     const getModalProps = <T extends TModalKeys>(current_modal: TModal<T>): TModalProps[T] => {
         if (current_modal?.props && Object.keys(current_modal.props).length > 0) {
@@ -38,7 +36,7 @@ const ModalManager = () => {
 
     if (Modal) {
         return (
-            <React.Suspense fallback={<div>Hewwo</div>}>
+            <React.Suspense fallback={null}>
                 <Modal {...getModalProps(modal)} />
                 {StackedModal && stacked_modal && (
                     <React.Suspense fallback={null}>

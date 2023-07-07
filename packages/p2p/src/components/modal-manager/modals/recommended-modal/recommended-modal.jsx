@@ -4,11 +4,7 @@ import { Button, Modal, Text } from '@deriv/components';
 import { localize } from 'Components/i18next';
 import { useModalManagerContext } from 'Components/modal-manager/modal-manager-context';
 
-type TRecommendedModal = {
-    message: string
-}
-
-const RecommendedModal = ({ message }: TRecommendedModal) => {
+const RecommendedModal = ({ message }) => {
     const { hideModal, is_modal_open } = useModalManagerContext();
 
     return (
@@ -19,7 +15,6 @@ const RecommendedModal = ({ message }: TRecommendedModal) => {
                 </Text>
             </Modal.Body>
             <Modal.Footer>
-                {/* @ts-ignore */}
                 <Button large primary onClick={hideModal} text={localize('Ok')} />
             </Modal.Footer>
         </Modal>

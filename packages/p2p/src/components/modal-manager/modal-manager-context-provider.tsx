@@ -42,7 +42,7 @@ type THideModalOptions = {
     should_hide_all_modals?: boolean;
 };
 
-const ModalManagerContextProvider = (props: React.PropsWithChildren<{mock?: TModalManagerContext}>) => {
+const ModalManagerContextProvider = (props: React.PropsWithChildren<{ mock?: TModalManagerContext }>) => {
     const [active_modal, setActiveModal] = React.useState<TModalVariants | null>(null);
     const [previous_modal, setPreviousModal] = React.useState<TModalVariants | null>(null);
     // for mobile, modals are stacked and not shown alternatingly one by one
@@ -99,12 +99,10 @@ const ModalManagerContextProvider = (props: React.PropsWithChildren<{mock?: TMod
         // eslint-disable-next-line no-param-reassign
         if (!options) options = { should_stack_modal: false };
 
-        console.log(isDesktop(), isDesktop)
         if (isDesktop() || options.should_stack_modal) {
             setPreviousModal(active_modal);
             setActiveModal(modal);
         } else if (!active_modal) {
-            console.log("HERE")
             setActiveModal(modal);
         } else {
             setStackedModal(modal);
@@ -176,8 +174,11 @@ const ModalManagerContextProvider = (props: React.PropsWithChildren<{mock?: TMod
         useRegisterModalProps,
     };
 
-
-    return <ModalManagerContext.Provider value={props.mock ? props.mock : state}>{props.children}</ModalManagerContext.Provider>;
+    return (
+        <ModalManagerContext.Provider value={props.mock ? props.mock : state}>
+            {props.children}
+        </ModalManagerContext.Provider>
+    );
 };
 
 export default ModalManagerContextProvider;
