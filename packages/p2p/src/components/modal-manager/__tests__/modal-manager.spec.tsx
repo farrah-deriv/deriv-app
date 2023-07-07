@@ -3,17 +3,19 @@ import { screen, render, waitFor } from '@testing-library/react';
 import ModalManagerContextProvider, { TModalManagerContext } from '../modal-manager-context-provider';
 import ModalManager from '../modal-manager';
 
-let mock_modal_manager_state: TModalManagerContext
+let mock_modal_manager_state: TModalManagerContext;
 
-
-function MockModal({title, subtitle}: {title?: string, subtitle?: string}) {
+function MockModal({ title, subtitle }: { title?: string; subtitle?: string }) {
     if (title && subtitle) {
-        return <div>BuySellModal with {title} and {subtitle}</div>
+        return (
+            <div>
+                BuySellModal with {title} and {subtitle}
+            </div>
+        );
     } else if (title) {
-        return <div>BuySellModal with {title}</div>
-    } else {
-        return <div>BuySellModal</div>
+        return <div>BuySellModal with {title}</div>;
     }
+    return <div>BuySellModal</div>;
 }
 
 jest.mock('Constants/modals', () => ({
@@ -21,7 +23,6 @@ jest.mock('Constants/modals', () => ({
         BuySellModal: MockModal,
     },
 }));
-
 
 describe('<ModalManager />', () => {
     beforeEach(() => {
@@ -39,28 +40,16 @@ describe('<ModalManager />', () => {
             stacked_modal: null,
             useRegisterModalProps: jest.fn(),
         };
-    })
+    });
 
     afterAll(() => {
-        jest.resetModules()
-        jest.resetAllMocks()
-    })
-
-    it('should not render any modals', () => {
-        mock_modal_manager_state.modal = null
-
-        render(
-            <React.Fragment>
-                <ModalManagerContextProvider mock={mock_modal_manager_state}>
-                    <ModalManager />
-                </ModalManagerContextProvider>
-            </React.Fragment>
-        );
-
-        const text = screen.queryByText('BuySellModal');
-        expect(text).not.toBeInTheDocument();
+        jest.resetModules();
+        jest.resetAllMocks();
     });
-    it('should render MockModal component if there are modals to be shown', async () => {
+
+    it('should not render any modals if no modals are intended to be shown', () => {
+        mock_modal_manager_state.modal = null;
+
         render(
             <React.Fragment>
                 <ModalManagerContextProvider mock={mock_modal_manager_state}>
@@ -68,18 +57,49 @@ describe('<ModalManager />', () => {
                 </ModalManagerContextProvider>
             </React.Fragment>
         );
+        expect(screen.queryByText('BuySellModal')).not.toBeInTheDocument();
+    });
 
-        const asyncElementPromise = screen.findByText('BuySellModal');
-        expect(await asyncElementPromise).toBeInTheDocument();
+    it('should render MockModal component if there are modals to be shown', () => {
+        mock_modal_manager_state.modal = {
+            key: 'BuySellModal',
+            props: {},
+        };
+        render(
+            <React.Fragment>
+                <ModalManagerContextProvider mock={mock_modal_manager_state}>
+                    <ModalManager />
+                </ModalManagerContextProvider>
+            </React.Fragment>
+        );
+        expect(screen.getByText('BuySellModal')).toBeInTheDocument();
+    });
+
+    it('should render the latest shown modal', () => {
+        mock_modal_manager_state.modal_props.set('BuySellModal', {
+            title: 'Cached Title',
+        });
+        mock_modal_manager_state.modal = {
+            key: 'AdErrorTooltipModal',
+            props: {},
+        };
+        render(
+            <React.Fragment>
+                <ModalManagerContextProvider mock={mock_modal_manager_state}>
+                    <ModalManager />
+                </ModalManagerContextProvider>
+            </React.Fragment>
+        );
+        expect(screen.queryByText('BuySellModal')).not.toBeInTheDocument();
     });
 
     it('should render MockModal component with props passed', async () => {
         mock_modal_manager_state.modal = {
             key: 'BuySellModal',
             props: {
-                title: 'Title'
-            }
-        }
+                title: 'Title',
+            },
+        };
         render(
             <React.Fragment>
                 <ModalManagerContextProvider mock={mock_modal_manager_state}>
@@ -90,12 +110,12 @@ describe('<ModalManager />', () => {
 
         const asyncElementPromise = screen.findByText('BuySellModal with Title');
         expect(await asyncElementPromise).toBeInTheDocument();
-    })
-    
-    it('should', async () => {
+    });
+
+    it('should pass modal props to the MockModal when there are cached and registered props', () => {
         mock_modal_manager_state.modal_props.set('BuySellModal', {
-            title: 'Cached Title'
-        })
+            title: 'Cached Title',
+        });
         render(
             <React.Fragment>
                 <ModalManagerContextProvider mock={mock_modal_manager_state}>
@@ -103,21 +123,19 @@ describe('<ModalManager />', () => {
                 </ModalManagerContextProvider>
             </React.Fragment>
         );
+        expect(screen.getByText('BuySellModal with Cached Title')).toBeInTheDocument();
+    });
 
-        const asyncElementPromise = screen.findByText('BuySellModal with Cached Title');
-        expect(await asyncElementPromise).toBeInTheDocument();
-    })
-
-    it('should 2', async () => {
+    it('should use registered props and passed-in props to the MockModal', () => {
         mock_modal_manager_state.modal_props.set('BuySellModal', {
-            title: 'Cached Title'
-        })
+            title: 'Cached Title',
+        });
         mock_modal_manager_state.modal = {
             key: 'BuySellModal',
             props: {
-                subtitle: 'Subtitle'
-            }
-        }
+                subtitle: 'Subtitle',
+            },
+        };
         render(
             <React.Fragment>
                 <ModalManagerContextProvider mock={mock_modal_manager_state}>
@@ -125,28 +143,6 @@ describe('<ModalManager />', () => {
                 </ModalManagerContextProvider>
             </React.Fragment>
         );
-
-        const asyncElementPromise = screen.findByText('BuySellModal with Cached Title and Subtitle');
-        expect(await asyncElementPromise).toBeInTheDocument();
-    })
-
-    it('should 2', async () => {
-        mock_modal_manager_state.modal_props.set('BuySellModal', {
-            title: 'Cached Title'
-        })
-        mock_modal_manager_state.modal = {
-            key: 'AdErrorTooltipModal',
-            props: {}
-        }
-        render(
-            <React.Fragment>
-                <ModalManagerContextProvider mock={mock_modal_manager_state}>
-                    <ModalManager />
-                </ModalManagerContextProvider>
-            </React.Fragment>
-        );
-
-        const asyncElementPromise = screen.queryByText('BuySellModal')
-        expect(asyncElementPromise).not.toBeInTheDocument();
-    })
+        expect(screen.getByText('BuySellModal with Cached Title and Subtitle')).toBeInTheDocument();
+    });
 });
