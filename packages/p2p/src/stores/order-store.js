@@ -28,6 +28,7 @@ export default class OrderStore {
             user_email_address: observable,
             verification_code: observable,
             verification_link_error_message: observable,
+            should_navigate_to_buy_sell: observable,
             has_order_payment_method_details: computed,
             order_information: computed,
             nav: computed,
@@ -45,6 +46,7 @@ export default class OrderStore {
             onUnmount: action.bound,
             setActiveOrder: action.bound,
             setForceRerenderOrders: action.bound,
+            setShouldNavigateToBuySell: action.bound,
             setApiErrorMessage: action.bound,
             setCancellationBlockDuration: action.bound,
             setCancellationCountPeriod: action.bound,
@@ -92,6 +94,7 @@ export default class OrderStore {
     error_message = '';
     has_more_items_to_load = false;
     is_invalid_verification_link_modal_open = false;
+    should_navigate_to_buy_sell = false;
     is_loading = false;
     is_rating_modal_open = false;
     is_recommended = undefined;
@@ -256,6 +259,7 @@ export default class OrderStore {
     hideDetails(should_navigate) {
         if (should_navigate && this.nav) {
             this.root_store.general_store.redirectTo(this.nav.location);
+            this.setShouldNavigateToBuySell(true);
         }
         this.setOrderId(null);
         this.setActiveOrder(null);
@@ -294,7 +298,7 @@ export default class OrderStore {
 
                         this.setOrders([...old_list, ...new_list]);
                     }
-                } else if (response?.error.code === api_error_codes.PERMISSION_DENIED) {
+                } else if (response?.error?.code === api_error_codes.PERMISSION_DENIED) {
                     this.root_store.general_store.setIsBlocked(true);
                 } else {
                     this.setApiErrorMessage(response?.error.message);
@@ -342,7 +346,6 @@ export default class OrderStore {
     onUnmount() {
         clearTimeout(this.order_rerender_timeout);
         this.unsubscribeFromCurrentOrder();
-        this.hideDetails(false);
     }
 
     setOrderDetails(response) {
@@ -561,6 +564,10 @@ export default class OrderStore {
 
     setCancellationLimit(cancellation_limit) {
         this.cancellation_limit = cancellation_limit;
+    }
+
+    setShouldNavigateToBuySell(should_navigate_to_buy_sell) {
+        this.should_navigate_to_buy_sell = should_navigate_to_buy_sell;
     }
 
     setData(data) {

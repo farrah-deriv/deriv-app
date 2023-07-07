@@ -1,7 +1,7 @@
 import React from 'react';
 import { action, computed, observable, reaction, makeObservable } from 'mobx';
 import ServerTime from 'Utils/server-time';
-import { isEmptyObject, isMobile, toMoment } from '@deriv/shared';
+import { isEmptyObject, isMobile, routes, toMoment } from '@deriv/shared';
 import BaseStore from 'Stores/base_store';
 import { localize, Localize } from 'Components/i18next';
 import { convertToMillis, getFormattedDateString } from 'Utils/date-time';
@@ -23,6 +23,7 @@ export default class GeneralStore extends BaseStore {
     balance;
     cancels_remaining = null;
     contact_info = '';
+    counterparty_advertiser_id = null;
     error_code = '';
     external_stores = {};
     feature_level = null;
@@ -30,6 +31,7 @@ export default class GeneralStore extends BaseStore {
     inactive_notification_count = 0;
     is_advertiser = false;
     is_advertiser_blocked = null;
+    is_advertiser_info_subscribed = false;
     is_blocked = false;
     is_block_unblock_user_loading = false;
     is_block_user_modal_open = false;
@@ -80,6 +82,7 @@ export default class GeneralStore extends BaseStore {
             advertiser_relations_response: observable, //TODO: Remove this when backend has fixed is_blocked flag issue
             block_unblock_user_error: observable,
             balance: observable,
+            counterparty_advertiser_id: observable,
             external_stores: observable,
             feature_level: observable,
             formik_ref: observable,
@@ -87,6 +90,7 @@ export default class GeneralStore extends BaseStore {
             inactive_notification_count: observable,
             is_advertiser: observable,
             is_advertiser_blocked: observable,
+            is_advertiser_info_subscribed: observable,
             is_blocked: observable,
             is_block_unblock_user_loading: observable,
             is_block_user_modal_open: observable,
@@ -108,6 +112,7 @@ export default class GeneralStore extends BaseStore {
             user_blocked_count: observable,
             user_blocked_until: observable,
             is_modal_open: observable,
+            active_tab_route: computed,
             blocked_until_date_time: computed,
             is_active_tab: computed,
             is_barred: computed,
@@ -116,9 +121,10 @@ export default class GeneralStore extends BaseStore {
             should_show_dp2p_blocked: computed,
             blockUnblockUser: action.bound,
             createAdvertiser: action.bound,
+            setCounterpartyAdvertiserId: action.bound,
             getWebsiteStatus: action.bound,
             handleNotifications: action.bound,
-            redirectToOrderDetails: action.bound,
+            setP2POrderTab: action.bound,
             showCompletedOrderNotification: action.bound,
             handleTabClick: action.bound,
             onMount: action.bound,
@@ -141,6 +147,7 @@ export default class GeneralStore extends BaseStore {
             saveFormState: action.bound,
             setInactiveNotificationCount: action.bound,
             setIsAdvertiser: action.bound,
+            setIsAdvertiserInfoSubscribed: action.bound,
             setIsBlocked: action.bound,
             setIsHighRisk: action.bound,
             setIsListed: action.bound,
@@ -169,6 +176,19 @@ export default class GeneralStore extends BaseStore {
             updateAdvertiserInfo: action.bound,
             updateP2pNotifications: action.bound,
         });
+    }
+
+    get active_tab_route() {
+        switch (this.active_index) {
+            case 1:
+                return routes.p2p_orders;
+            case 2:
+                return routes.p2p_my_ads;
+            case 3:
+                return routes.p2p_my_profile;
+            default:
+                return routes.p2p_buy_sell;
+        }
     }
 
     get blocked_until_date_time() {
@@ -356,7 +376,7 @@ export default class GeneralStore extends BaseStore {
         this.updateP2pNotifications(notifications);
     }
 
-    redirectToOrderDetails(order_id) {
+    setP2POrderTab(order_id) {
         const { order_store } = this.root_store;
         this.redirectTo('orders');
         this.setOrderTableType(order_list.INACTIVE);
@@ -376,7 +396,7 @@ export default class GeneralStore extends BaseStore {
                     if (order_store.order_id === order_id) {
                         order_store.setIsRatingModalOpen(true);
                     }
-                    this.redirectToOrderDetails(order_id);
+                    this.setP2POrderTab(order_id);
                 },
                 text: localize('Give feedback'),
             },
@@ -511,10 +531,6 @@ export default class GeneralStore extends BaseStore {
             if (this.ws_subscriptions) {
                 this.setIsLoading(false);
             }
-
-            this.external_stores.notifications.setP2PRedirectTo({
-                redirectTo: this.redirectTo,
-            });
         });
     }
 
@@ -619,6 +635,10 @@ export default class GeneralStore extends BaseStore {
         this.contact_info = contact_info;
     }
 
+    setCounterpartyAdvertiserId(counterparty_advertiser_id) {
+        this.counterparty_advertiser_id = counterparty_advertiser_id;
+    }
+
     setDefaultAdvertDescription(default_advert_description) {
         this.default_advert_description = default_advert_description;
     }
@@ -657,6 +677,10 @@ export default class GeneralStore extends BaseStore {
 
     setIsAdvertiserBlocked(is_advertiser_blocked) {
         this.is_advertiser_blocked = is_advertiser_blocked;
+    }
+
+    setIsAdvertiserInfoSubscribed(is_advertiser_info_subscribed) {
+        this.is_advertiser_info_subscribed = is_advertiser_info_subscribed;
     }
 
     setIsBlocked(is_blocked) {
@@ -836,6 +860,7 @@ export default class GeneralStore extends BaseStore {
             this.setPaymentInfo(payment_info);
             this.setShouldShowRealName(!!show_name);
             this.setIsRestricted(false);
+            this.setIsAdvertiserInfoSubscribed(true);
 
             if (upgradable_daily_limits) this.showDailyLimitIncreaseNotification();
         } else {

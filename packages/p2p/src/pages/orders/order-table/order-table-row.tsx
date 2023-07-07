@@ -1,6 +1,6 @@
 import React from 'react';
 import classNames from 'classnames';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import { useStore, observer } from '@deriv/stores';
 import { DesktopWrapper, Icon, MobileWrapper, Table, Text } from '@deriv/components';
 import { formatMoney, routes } from '@deriv/shared';
@@ -79,7 +79,8 @@ const OrderTableRow = ({ row: order }: TOrderTableRowProps) => {
     const interval = React.useRef<NodeJS.Timeout | null>(null);
     const should_show_order_details = React.useRef(true);
     const history = useHistory();
-    const { showModal, hideModal } = useModalManagerContext();
+    const location = useLocation();
+    const { showModal, hideModal } = useModalManagerContext() || {};
 
     const is_timer_visible = is_active_tab && remaining_time !== localize('expired');
     const offer_amount = `${amount_display} ${account_currency}`;
@@ -100,7 +101,7 @@ const OrderTableRow = ({ row: order }: TOrderTableRowProps) => {
             current_query_params.append('order', order.id);
 
             history.replace({
-                pathname: routes.cashier_p2p,
+                pathname: routes.p2p_orders,
                 search: current_query_params.toString(),
                 hash: location.hash,
             });

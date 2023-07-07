@@ -1,5 +1,7 @@
 import React from 'react';
+import { useHistory } from 'react-router-dom';
 import { DesktopWrapper, Icon, MobileFullPageModal, MobileWrapper, ThemedScrollbars } from '@deriv/components';
+import { routes } from '@deriv/shared';
 import { useModalManagerContext } from 'Components/modal-manager/modal-manager-context';
 import PageReturn from 'Components/page-return';
 import { useStores } from 'Stores';
@@ -13,6 +15,17 @@ const OrderDetailsWrapper = ({ children, page_title }: React.PropsWithChildren<T
     const { order_store, sendbird_store } = useStores();
     const { isCurrentModal } = useModalManagerContext();
 
+    const history = useHistory();
+
+    const pageHeaderReturnHandler = () => {
+        order_store.onPageReturn();
+
+        if (order_store.should_navigate_to_buy_sell) {
+            history.push(routes.p2p_buy_sell);
+            order_store.setShouldNavigateToBuySell(false);
+        }
+    };
+
     return (
         <React.Fragment>
             <MobileWrapper>
@@ -23,7 +36,7 @@ const OrderDetailsWrapper = ({ children, page_title }: React.PropsWithChildren<T
                         height_offset='80px'
                         is_flex
                         is_modal_open={!isCurrentModal('OrderDetailsComplainModal')}
-                        pageHeaderReturnFn={order_store.onPageReturn}
+                        pageHeaderReturnFn={pageHeaderReturnHandler}
                         onClickClose={order_store.onPageReturn}
                         page_header_text={page_title}
                         renderPageHeaderTrailingIcon={() => (
@@ -44,7 +57,7 @@ const OrderDetailsWrapper = ({ children, page_title }: React.PropsWithChildren<T
                 </div>
             </MobileWrapper>
             <DesktopWrapper>
-                <PageReturn onClick={order_store.onPageReturn} page_title={page_title} />
+                <PageReturn onClick={pageHeaderReturnHandler} page_title={page_title} />
                 <ThemedScrollbars height='70vh'>{children}</ThemedScrollbars>
             </DesktopWrapper>
         </React.Fragment>

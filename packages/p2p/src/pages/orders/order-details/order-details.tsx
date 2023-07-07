@@ -2,7 +2,7 @@ import classNames from 'classnames';
 import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { Button, DesktopWrapper, HintBox, Icon, Text, ThemedScrollbars } from '@deriv/components';
-import { formatMoney, isMobile } from '@deriv/shared';
+import { formatMoney, isMobile, routes } from '@deriv/shared';
 import { useStore, observer } from '@deriv/stores';
 import { api_error_codes } from 'Constants/api-error-codes.js';
 import { Localize, localize } from 'Components/i18next';
@@ -91,6 +91,10 @@ const OrderDetails = () => {
         });
     };
 
+    const navigateToOrderDetails = (orderId: string) => {
+        history.push({ pathname: routes.p2p_orders, search: `?order=${orderId}` });
+    };
+
     React.useEffect(() => {
         const disposeListeners = sendbird_store.registerEventListeners();
         const disposeReactions = sendbird_store.registerMobXReactions();
@@ -119,11 +123,12 @@ const OrderDetails = () => {
             handleChatChannelCreation();
         }
 
-        const order_props = {
+        setP2POrderProps({
             order_id: order_store.order_id,
-            redirectToOrderDetails: general_store.redirectToOrderDetails,
+            setP2POrderTab: general_store.setP2POrderTab,
             setIsRatingModalOpen: (is_open: boolean) => (is_open ? showRatingModal() : hideModal()),
-        };
+            navigateToOrderDetails,
+        });
 
         return () => {
             disposeListeners();
@@ -131,7 +136,6 @@ const OrderDetails = () => {
             order_store.setOrderPaymentMethodDetails(undefined);
             order_store.setOrderId(null);
             order_store.setActiveOrder(null);
-            setP2POrderProps(order_props);
             history?.replace({
                 search: '',
                 hash: location.hash,
@@ -139,6 +143,7 @@ const OrderDetails = () => {
             buy_sell_store.setIsCreateOrderSubscribed(false);
             buy_sell_store.unsubscribeCreateOrder();
             sendbird_store.setHasChatError(false);
+            sendbird_store.setChannelMessages([]);
         };
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
 

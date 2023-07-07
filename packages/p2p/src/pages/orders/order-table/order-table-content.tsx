@@ -1,8 +1,10 @@
 import React from 'react';
+import { useHistory } from 'react-router-dom';
 import { reaction } from 'mobx';
 import { P2POrderInfo } from '@deriv/api-types';
 import { Button, DesktopWrapper, Div100vhContainer, InfiniteDataList, Loading, MobileWrapper } from '@deriv/components';
 import { TRowRenderer } from '@deriv/components/src/components/data-list/data-list';
+import { routes } from '@deriv/shared';
 import { observer, useStore } from '@deriv/stores';
 import { Localize, localize } from 'Components/i18next';
 import TableError from 'Components/section-error';
@@ -33,6 +35,7 @@ const OrderTableContent = () => {
     const {
         client: { loginid },
     } = useStore();
+    const history = useHistory();
 
     const orderTableRowRenderer = (row_props: TRowRenderer & { row: ExtendedOrderDetails }) => {
         return <OrderTableRow {...row_props} />;
@@ -84,7 +87,15 @@ const OrderTableContent = () => {
     return (
         <P2pEmpty has_tabs icon='IcNoOrder' title={localize('You have no orders.')}>
             {is_active_tab && (
-                <Button primary large className='p2p-empty__button' onClick={() => general_store.handleTabClick(0)}>
+                <Button
+                    primary
+                    large
+                    className='p2p-empty__button'
+                    onClick={() => {
+                        general_store.handleTabClick(0);
+                        history.push({ pathname: routes.p2p_buy_sell });
+                    }}
+                >
                     <Localize i18n_default_text='Buy/Sell' />
                 </Button>
             )}
