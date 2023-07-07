@@ -33,7 +33,7 @@ function MockBuySellModal({ title, subtitle }: { title?: string; subtitle?: stri
         key: 'MyAdsDeleteModal',
         props: {
             title: 'Title from BuySellModal',
-        },
+        } as unknown as Record<string, never>,
     });
 
     const showMyAdsDeleteModal = () => {
@@ -205,7 +205,7 @@ describe('<ModalManagerContextProvider />', () => {
         expect(screen.queryByText('BuySellModal')).not.toBeInTheDocument();
     });
 
-    it('should render the mock modal when showModal is called in responsive view', async () => {
+    it('should render the mock modal when showModal is called in responsive view', () => {
         (isDesktop as jest.Mock).mockImplementation(() => false);
         render(
             <React.Fragment>
@@ -225,7 +225,7 @@ describe('<ModalManagerContextProvider />', () => {
         expect(screen.queryByText('BuySellModal')).toBeInTheDocument();
     });
 
-    it('should render the latest shown modal when showModal is called multiple times in responsive view', async () => {
+    it('should render the latest shown modal when showModal is called multiple times in responsive view', () => {
         (isDesktop as jest.Mock).mockImplementation(() => false);
         render(
             <React.Fragment>
@@ -260,7 +260,7 @@ describe('<ModalManagerContextProvider />', () => {
         expect(screen.queryByText('BuySellModal')).not.toBeInTheDocument();
     });
 
-    it('should return correct status of modal visibility based on isCurrentModal function', async () => {
+    it('should return correct status of modal visibility based on isCurrentModal function', () => {
         render(
             <React.Fragment>
                 <div id='modal_root' />
@@ -343,7 +343,7 @@ describe('<ModalManagerContextProvider />', () => {
         expect(screen.queryByText('BuySellModal')).not.toBeInTheDocument();
     });
 
-    it('should hide all modals if should_hide_all_modals option is passed in hideModal function on desktop view', async () => {
+    it('should hide all modals if should_hide_all_modals option is passed in hideModal function on desktop view', () => {
         (isDesktop as jest.Mock).mockImplementation(() => true);
         render(
             <React.Fragment>
@@ -375,7 +375,7 @@ describe('<ModalManagerContextProvider />', () => {
         expect(screen.queryByText('BuySellModal')).not.toBeInTheDocument();
     });
 
-    it('should hide all modals if should_hide_all_modals option is passed in hideModal function on responsive view', async () => {
+    it('should hide all modals if should_hide_all_modals option is passed in hideModal function on responsive view', () => {
         (isDesktop as jest.Mock).mockImplementation(() => false);
         render(
             <React.Fragment>

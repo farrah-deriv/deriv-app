@@ -93,7 +93,7 @@ describe('<ModalManager />', () => {
         expect(screen.queryByText('BuySellModal')).not.toBeInTheDocument();
     });
 
-    it('should render MockModal component with props passed', async () => {
+    it('should render MockModal component with props passed', () => {
         mock_modal_manager_state.modal = {
             key: 'BuySellModal',
             props: {
@@ -107,9 +107,7 @@ describe('<ModalManager />', () => {
                 </ModalManagerContextProvider>
             </React.Fragment>
         );
-
-        const asyncElementPromise = screen.findByText('BuySellModal with Title');
-        expect(await asyncElementPromise).toBeInTheDocument();
+        expect(screen.getByText('BuySellModal with Title')).toBeInTheDocument();
     });
 
     it('should pass modal props to the MockModal when there are cached and registered props', () => {
