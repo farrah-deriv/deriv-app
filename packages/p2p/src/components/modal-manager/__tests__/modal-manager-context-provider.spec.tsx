@@ -1,7 +1,8 @@
 import React from 'react';
 import { screen, render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import ModalManagerContextProvider, { TModalManagerContext } from '../modal-manager-context-provider';
+import ModalManagerContextProvider from '../modal-manager-context-provider';
+import { TModalManagerContext } from 'Types';
 import ModalManager from '../modal-manager';
 import { useModalManagerContext } from '../modal-manager-context';
 import { isDesktop } from '@deriv/shared';

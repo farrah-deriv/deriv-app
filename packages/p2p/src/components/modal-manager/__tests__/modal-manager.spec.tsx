@@ -1,7 +1,8 @@
 import React from 'react';
-import { screen, render, waitFor } from '@testing-library/react';
-import ModalManagerContextProvider, { TModalManagerContext } from '../modal-manager-context-provider';
+import { screen, render } from '@testing-library/react';
+import ModalManagerContextProvider from '../modal-manager-context-provider';
 import ModalManager from '../modal-manager';
+import { TModalManagerContext } from 'Types';
 
 let mock_modal_manager_state: TModalManagerContext;
 

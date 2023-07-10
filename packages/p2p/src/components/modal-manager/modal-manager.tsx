@@ -1,7 +1,7 @@
 import React from 'react';
-import { Modals, TModalKeys, TModalProps, TModals } from 'Constants/modals';
+import { Modals } from 'Constants/modals';
 import { useModalManagerContext } from './modal-manager-context';
-import { TModal } from './modal-manager-context-provider';
+import { TModal, TModalKeys, TModalProps } from 'Types';
 
 type LazyModal = React.LazyExoticComponent<React.ComponentType<TModalProps[TModalKeys]>>;
 

@@ -2,8 +2,8 @@ import React from 'react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { useStores } from 'Stores';
 import { requestWS } from 'Utils/websocket';
-import OrderDetailsCancelModal from '../order-details-cancel-modal.jsx';
 import { useModalManagerContext } from 'Components/modal-manager/modal-manager-context.ts';
+import OrderDetailsCancelModal from '../order-details-cancel-modal.jsx';
 
 const el_modal = document.createElement('div');
 

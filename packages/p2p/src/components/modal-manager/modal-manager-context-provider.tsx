@@ -2,54 +2,40 @@ import React from 'react';
 import { useStores } from 'Stores/index';
 import { ModalManagerContext } from './modal-manager-context';
 import { isDesktop } from '@deriv/shared';
-import type { TModalKeys, TModalProps } from 'Constants/modals';
+import type {
+    TModal,
+    TModalKeys,
+    TModalProps,
+    TModalVariants,
+    TModalManagerContext,
+    TShowModalOptions,
+    THideModalOptions,
+} from 'Types';
 
-/**
- * TModal type represents a specific modal type, with its prop typing constrained to that specific modal based on its key.
- */
-export type TModal<T extends TModalKeys> = {
-    key: T;
-    props: TModalProps[T];
-};
-
-/**
- * TModalVariants type represents the union of all possible modal keys and prop types.
- * This type is necessary for typing a function or generic argument that could accept any type of modal.
- */
-type TModalVariants = {
-    key: TModalKeys;
-    props: TModalProps[TModalKeys];
-};
-
-export type TModalManagerContext = {
-    hideModal: (options?: THideModalOptions) => void;
-    is_modal_open: boolean;
-    isCurrentModal: (...keys: TModalKeys[]) => boolean;
-    modal_props: Map<TModalKeys, TModalProps[TModalKeys]>;
-    modal: TModalVariants | null;
+type TModalState = {
+    active_modal: TModalVariants | null;
     previous_modal: TModalVariants | null;
-    showModal: <T extends TModalKeys>(modal: TModal<T>, options?: TShowModalOptions) => void;
+    // for mobile, modals are stacked and not shown alternatingly one by one
     stacked_modal: TModalVariants | null;
-    useRegisterModalProps: <T extends TModalKeys>(modals: TModal<T> | TModalVariants[]) => void;
-};
-
-type TShowModalOptions = {
-    should_stack_modal?: boolean;
-};
-
-type THideModalOptions = {
-    should_save_form_history?: boolean;
-    should_hide_all_modals?: boolean;
 };
 
 const ModalManagerContextProvider = (props: React.PropsWithChildren<{ mock?: TModalManagerContext }>) => {
-    const [active_modal, setActiveModal] = React.useState<TModalVariants | null>(null);
-    const [previous_modal, setPreviousModal] = React.useState<TModalVariants | null>(null);
-    // for mobile, modals are stacked and not shown alternatingly one by one
-    const [stacked_modal, setStackedModal] = React.useState<TModalVariants | null>(null);
+    const [modal, setModal] = React.useState<TModalState>({
+        active_modal: null,
+        previous_modal: null,
+        // for mobile, modals are stacked and not shown alternatingly one by one
+        stacked_modal: null,
+    });
     const [is_modal_open, setIsModalOpen] = React.useState(false);
     const [modal_props, setModalProps] = React.useState<Map<TModalKeys, TModalProps[TModalKeys]>>(new Map());
     const { general_store } = useStores();
+
+    const setModalState = (state: Partial<TModalState>) => {
+        setModal({
+            ...modal,
+            ...state,
+        });
+    };
 
     /**
      * Sets the specified modals' props on mount or when the props passed to the hook has changed.
@@ -66,9 +52,9 @@ const ModalManagerContextProvider = (props: React.PropsWithChildren<{ mock?: TMo
 
         const registerModals = React.useCallback(() => {
             if (Array.isArray(modals)) {
-                modals.forEach(modal => {
-                    registered_modals.current.push(modal);
-                    setModalProps(modal_props.set(modal.key, modal.props));
+                modals.forEach(registered_modal => {
+                    registered_modals.current.push(registered_modal);
+                    setModalProps(modal_props.set(registered_modal.key, registered_modal.props));
                 });
             } else {
                 registered_modals.current.push(modals);
@@ -93,19 +79,26 @@ const ModalManagerContextProvider = (props: React.PropsWithChildren<{ mock?: TMo
      *
      * @param {...string} keys - the modal keys to check if the current visible modal matches it
      */
-    const isCurrentModal = (...keys: TModalKeys[]) => (active_modal ? keys.includes(active_modal.key) : false);
+    const isCurrentModal = (...keys: TModalKeys[]) =>
+        modal.active_modal ? keys.includes(modal.active_modal.key) : false;
 
-    const showModal = <T extends TModalKeys>(modal: TModal<T>, options?: TShowModalOptions) => {
+    const showModal = <T extends TModalKeys>(modal_to_show: TModal<T>, options?: TShowModalOptions) => {
         // eslint-disable-next-line no-param-reassign
         if (!options) options = { should_stack_modal: false };
 
         if (isDesktop() || options.should_stack_modal) {
-            setPreviousModal(active_modal);
-            setActiveModal(modal);
-        } else if (!active_modal) {
-            setActiveModal(modal);
+            setModalState({
+                active_modal: modal_to_show,
+                previous_modal: modal.active_modal,
+            });
+        } else if (!modal.active_modal) {
+            setModalState({
+                active_modal: modal_to_show,
+            });
         } else {
-            setStackedModal(modal);
+            setModalState({
+                stacked_modal: modal_to_show,
+            });
         }
         setIsModalOpen(true);
     };
@@ -134,42 +127,45 @@ const ModalManagerContextProvider = (props: React.PropsWithChildren<{ mock?: TMo
         }
 
         if (isDesktop()) {
-            if (should_hide_all_modals) {
-                setPreviousModal(null);
-                setActiveModal(null);
-                setIsModalOpen(false);
-            } else if (previous_modal) {
-                setActiveModal(previous_modal);
-                setPreviousModal(null);
+            if (should_hide_all_modals || modal.previous_modal) {
+                setModalState({
+                    active_modal: should_hide_all_modals ? null : modal.previous_modal,
+                    previous_modal: null,
+                });
+                if (should_hide_all_modals) setIsModalOpen(false);
             } else {
-                setActiveModal(null);
+                setModalState({
+                    active_modal: null,
+                });
                 setIsModalOpen(false);
             }
-        } else if (stacked_modal && Object.keys(stacked_modal).length !== 0) {
-            if (should_hide_all_modals) {
-                setActiveModal(null);
-                setIsModalOpen(false);
-            }
-            setStackedModal(null);
+        } else if (modal.stacked_modal && Object.keys(modal.stacked_modal).length !== 0) {
+            setModalState({
+                active_modal: should_hide_all_modals ? null : modal.active_modal,
+                stacked_modal: null,
+            });
+            if (should_hide_all_modals) setIsModalOpen(false);
         } else {
-            setActiveModal(null);
+            setModalState({
+                active_modal: null,
+            });
             setIsModalOpen(false);
         }
     };
 
     general_store.hideModal = hideModal;
     general_store.isCurrentModal = isCurrentModal;
-    general_store.modal = active_modal;
+    general_store.modal = modal.active_modal;
     general_store.showModal = showModal;
 
     const state: TModalManagerContext = {
         hideModal,
         is_modal_open,
         isCurrentModal,
-        modal: active_modal,
+        modal: modal.active_modal,
+        previous_modal: modal.previous_modal,
+        stacked_modal: modal.stacked_modal,
         modal_props,
-        previous_modal,
-        stacked_modal,
         showModal,
         useRegisterModalProps,
     };

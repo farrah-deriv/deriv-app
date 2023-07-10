@@ -1,5 +1,5 @@
 import React from 'react';
-import { TModalManagerContext } from './modal-manager-context-provider';
+import { TModalManagerContext } from 'Types';
 
 export const ModalManagerContext = React.createContext<TModalManagerContext | null>(null);
 
