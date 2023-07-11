@@ -38,7 +38,7 @@ const ModalManager = () => {
         return (
             <React.Suspense fallback={null}>
                 <Modal {...getModalProps(modal)} />
-                {StackedModal && (
+                {StackedModal && stacked_modal && (
                     <React.Suspense fallback={null}>
                         <StackedModal {...getModalProps(stacked_modal as TModalVariants)} />
                     </React.Suspense>

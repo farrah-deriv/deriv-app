@@ -1,8 +1,10 @@
 import React from 'react';
 import { screen, render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { useModalManagerContext } from '../modal-manager-context';
 import ModalManagerContextProvider from '../modal-manager-context-provider';
 import ModalManager from '../modal-manager';
+import { Modal } from '@deriv/components';
 import { isDesktop } from '@deriv/shared';
 import { useStores } from 'Stores/index';
 import {
