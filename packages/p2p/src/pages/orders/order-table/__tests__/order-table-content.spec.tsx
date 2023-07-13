@@ -34,6 +34,13 @@ jest.mock('Stores', () => ({
     useStores: jest.fn(() => mock_p2p_store),
 }));
 
+jest.mock('react-router-dom', () => ({
+    ...jest.requireActual('react-router-dom'),
+    useHistory: jest.fn(() => ({
+        push: jest.fn(),
+    })),
+}));
+
 const wrapper = ({ children }: { children: JSX.Element }) => (
     <StoreProvider store={mock_shared_store}>{children}</StoreProvider>
 );

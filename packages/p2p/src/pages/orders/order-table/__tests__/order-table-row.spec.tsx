@@ -75,6 +75,10 @@ jest.mock('react-router-dom', () => ({
     useHistory: jest.fn(() => ({
         replace: jest.fn(),
     })),
+    useLocation: jest.fn(() => ({
+        search: '',
+        hash: '',
+    })),
 }));
 
 const wrapper = ({ children }: { children: JSX.Element }) => (
