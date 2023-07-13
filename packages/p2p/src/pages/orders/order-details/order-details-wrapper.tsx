@@ -14,6 +14,7 @@ type TOrderDetailsWrapperProps = {
 const OrderDetailsWrapper = ({ children, page_title }: React.PropsWithChildren<TOrderDetailsWrapperProps>) => {
     const { order_store, sendbird_store } = useStores();
     const { isCurrentModal } = useModalManagerContext();
+    const { order_information } = order_store;
 
     const history = useHistory();
 
@@ -49,7 +50,7 @@ const OrderDetailsWrapper = ({ children, page_title }: React.PropsWithChildren<T
                             />
                         )}
                         renderPageFooterChildren={
-                            order_store.order_information.should_show_order_footer && (() => <OrderDetailsFooter />)
+                            order_information?.should_show_order_footer && (() => <OrderDetailsFooter />)
                         }
                     >
                         {children}

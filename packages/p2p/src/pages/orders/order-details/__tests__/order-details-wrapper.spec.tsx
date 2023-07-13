@@ -8,11 +8,20 @@ import OrderDetailsWrapper from '../order-details-wrapper';
 
 const mock_set_should_show_chat_modal = jest.fn();
 
+const mock_order_store = {
+    order_information: {
+        should_show_order_footer: true,
+    },
+    onPageReturn: jest.fn(),
+    should_navigate_to_buy_sell: true,
+    setShouldNavigateToBuySell: jest.fn(),
+};
+
 jest.mock('Stores', () => ({
     ...jest.requireActual('Stores'),
     useStores: jest.fn(
         (): DeepPartial<ReturnType<typeof useStores>> => ({
-            order_store: { order_information: { should_show_order_footer: true } },
+            order_store: mock_order_store,
             sendbird_store: { setShouldShowChatModal: mock_set_should_show_chat_modal },
         })
     ),
@@ -30,6 +39,13 @@ jest.mock('Components/modal-manager/modal-manager-context', () => ({
             isCurrentModal: jest.fn(() => false),
         })
     ),
+}));
+
+jest.mock('react-router-dom', () => ({
+    ...jest.requireActual('react-router-dom'),
+    useHistory: jest.fn(() => ({
+        push: jest.fn(),
+    })),
 }));
 
 describe('<OrderDetailsWrapper />', () => {
@@ -73,5 +89,14 @@ describe('<OrderDetailsWrapper />', () => {
         const svg_icon = screen.getByTestId('dt_chat_icon');
         userEvent.click(svg_icon);
         expect(mock_set_should_show_chat_modal).toHaveBeenCalledTimes(1);
+    });
+
+    it('should return to previous page when page return button is clicked', () => {
+        const { debug } = render(<OrderDetailsWrapper page_title='test' />);
+        const page_return_button = screen.getByTestId('dt_mobile_full_page_modal_return_header');
+        expect(page_return_button).toBeInTheDocument();
+        userEvent.click(page_return_button);
+        expect(mock_order_store.onPageReturn).toHaveBeenCalledTimes(1);
+        expect(mock_order_store.setShouldNavigateToBuySell).toHaveBeenCalledTimes(1);
     });
 });
