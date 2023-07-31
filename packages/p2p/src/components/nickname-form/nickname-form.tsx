@@ -13,6 +13,18 @@ type TNicknameFormProps = {
 const NicknameForm = ({ onCancel }: TNicknameFormProps) => {
     const { general_store } = useStores();
 
+    const closeForm = () => {
+        general_store.setShouldShowPopup(false);
+    };
+
+    // TODO: move it to hook when this component will be changed as part of refactoring.
+    React.useEffect(() => {
+        window.addEventListener('popstate', closeForm);
+        return () => {
+            window.removeEventListener('popstate', closeForm);
+        };
+    }, [closeForm]);
+
     return (
         <Formik
             validate={general_store.validatePopup}
