@@ -65,6 +65,7 @@ const AdvertiserPage = () => {
     };
 
     React.useEffect(() => {
+        buy_sell_store.setShowAdvertiserPage(true);
         advertiser_page_store.onMount();
         advertiser_page_store.setIsDropdownMenuVisible(false);
 
