@@ -17,6 +17,17 @@ jest.mock('@deriv/shared', () => ({
     useIsMounted: jest.fn().mockReturnValue(() => true),
 }));
 
+jest.mock('@sendbird/chat', () => ({
+    SendbirdChat: jest.fn().mockReturnValue({}),
+}));
+
+jest.mock('@sendbird/chat/groupChannel', () => ({
+    SendbirdChat: jest.fn().mockReturnValue({}),
+}));
+
+jest.mock('@sendbird/chat/message', () => ({
+    SendbirdChat: jest.fn().mockReturnValue({}),
+}));
 const mock_store_values = {
     general_store: {
         advertiser_info: {
@@ -33,17 +44,6 @@ const mock_store_values = {
         setErrorMessage: jest.fn(),
     },
 };
-jest.mock('@sendbird/chat', () => ({
-    SendbirdChat: jest.fn().mockReturnValue({}),
-}));
-
-jest.mock('@sendbird/chat/groupChannel', () => ({
-    SendbirdChat: jest.fn().mockReturnValue({}),
-}));
-
-jest.mock('@sendbird/chat/message', () => ({
-    SendbirdChat: jest.fn().mockReturnValue({}),
-}));
 
 jest.mock('Stores', () => ({
     ...jest.requireActual('Stores'),
