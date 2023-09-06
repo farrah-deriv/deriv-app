@@ -75,6 +75,8 @@ export default class MyAdsStore extends BaseStore {
             is_searching_payment_method: observable,
             is_table_loading: observable,
             item_offset: observable,
+            payment_method_ids: observable,
+            payment_method_names: observable,
             p2p_advert_information: observable,
             required_ad_type: observable,
             search_term: observable,

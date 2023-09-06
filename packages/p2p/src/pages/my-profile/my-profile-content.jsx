@@ -25,7 +25,8 @@ const MyProfileContent = () => {
                 </DesktopWrapper>
                 <MobileWrapper>
                     <MobileFullPageModal
-                        body_className={classNames('payment-methods-list__modal', {
+                        body_className={classNames({
+                            'payment-methods-list__modal': !my_profile_store.should_show_add_payment_method_form,
                             'payment-methods-list__modal-add':
                                 my_profile_store.selected_payment_method ||
                                 my_profile_store.should_show_edit_payment_method_form,

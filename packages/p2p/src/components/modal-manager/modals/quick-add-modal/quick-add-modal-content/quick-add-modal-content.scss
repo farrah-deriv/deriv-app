@@ -1,0 +1,14 @@
+.quick-add-modal-content {
+    &__horizontal {
+        padding-right: 0rem;
+    }
+
+    &__info {
+        margin-bottom: 1.3rem;
+    }
+
+    &__scroll {
+        overflow: auto;
+        padding: 1rem 0 0;
+    }
+}

@@ -19,6 +19,10 @@ type TModalState = {
     stacked_modal: TModalVariants | null;
 };
 
+type TPersistedStates = {
+    [key: string]: any;
+};
+
 const ModalManagerContextProvider = (props: React.PropsWithChildren<{ mock?: TModalManagerContext }>) => {
     const [modal, setModal] = React.useState<TModalState>({
         active_modal: null,
@@ -29,7 +33,7 @@ const ModalManagerContextProvider = (props: React.PropsWithChildren<{ mock?: TMo
     const [is_modal_open, setIsModalOpen] = React.useState(false);
     const [modal_props, setModalProps] = React.useState<Map<TModalKeys, TModalProps[TModalKeys]>>(new Map());
     const { general_store } = useStores();
-    const persisted_states = React.useRef({});
+    const persisted_states: React.MutableRefObject<TPersistedStates> = React.useRef({});
 
     /**
      * A `useState` wrapper that allows the local state to be persisted and restored if the modal is unmounted in place of another modal.
@@ -39,28 +43,31 @@ const ModalManagerContextProvider = (props: React.PropsWithChildren<{ mock?: TMo
      * @param {key} string - the key to specify when persisting the local state, by default you should specify the local state name
      * @param {default_state} - the value you want the state to be initially
      */
-    const useSavedState = (key, default_state) => {
+    const useSavedState = (key: string, default_state: string[]) => {
         const [saved_state, setSavedState] = React.useState(default_state);
         const saved_state_ref = React.useRef(saved_state);
 
         React.useEffect(() => {
-            const persisted_state = persisted_states.current[active_modal.key];
+            if (modal.active_modal) {
+                const persisted_state = persisted_states.current[modal.active_modal.key];
 
-            if (persisted_state) {
-                if (persisted_state[key]) {
-                    setSavedState(persisted_state[key]);
+                if (persisted_state) {
+                    if (persisted_state[key]) {
+                        setSavedState(persisted_state[key]);
+                    }
+                } else {
+                    persisted_states.current[modal.active_modal.key] = {
+                        [key]: default_state,
+                    };
                 }
-            } else {
-                persisted_states.current[active_modal.key] = {
-                    [key]: default_state,
-                };
             }
 
             return () => {
-                if (persisted_states.current[active_modal.key]) {
-                    persisted_states.current[active_modal.key][key] = saved_state_ref.current;
+                if (modal.active_modal && persisted_states.current[modal.active_modal.key]) {
+                    persisted_states.current[modal.active_modal.key][key] = saved_state_ref.current;
                 }
             };
+            // eslint-disable-next-line react-hooks/exhaustive-deps
         }, []);
 
         React.useEffect(() => {

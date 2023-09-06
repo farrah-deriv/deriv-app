@@ -16,7 +16,7 @@
     &__body {
         display: flex;
         flex-direction: column;
-        padding: 1.5rem;
+        padding: 2rem;
     }
 
     &__button {
@@ -31,20 +31,11 @@
         height: fit-content !important;
     }
 
-    &__info {
-        margin-bottom: 1.3rem;
-    }
-
     &__icon {
         margin-right: 0.8rem;
     }
+}
 
-    &__scroll {
-        overflow: auto;
-        padding: 1rem 0 0;
-    }
-
-    &__horizontal {
-        padding-right: 0rem;
-    }
+.dc-modal-header--quick-add-modal {
+    border-bottom: 2px solid var(--general-section-5);
 }
