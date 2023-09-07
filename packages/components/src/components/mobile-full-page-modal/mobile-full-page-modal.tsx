@@ -80,7 +80,12 @@ const MobileFullPageModal = ({
                     >
                         {pageHeaderReturnFn && (
                             <div className='dc-mobile-full-page-modal__header-return'>
-                                <Icon icon='IcArrowLeftBold' onClick={pageHeaderReturnFn} size={16} />
+                                <Icon
+                                    data_testid='dt_mobile_full_page_modal_return_icon'
+                                    icon='IcArrowLeftBold'
+                                    onClick={pageHeaderReturnFn}
+                                    size={16}
+                                />
                             </div>
                         )}
                         {renderPageHeader && renderPageHeader()}

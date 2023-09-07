@@ -101,7 +101,8 @@ const QuickAddModal = ({ advert }: TQuickAddModalProps) => {
                                 {should_show_add_payment_method && (
                                     <Icon
                                         className='quick-add-modal__icon'
-                                        icon='icArrowLeftBold'
+                                        data_testid='dt_quick_add_modal_arrow_icon'
+                                        icon='IcArrowLeftBold'
                                         onClick={() => {
                                             setShouldCloseAllModals(false);
                                         }}
@@ -117,7 +118,7 @@ const QuickAddModal = ({ advert }: TQuickAddModalProps) => {
                     width={is_buy_advert ? '' : '440px'}
                 >
                     <QuickAddModalContent
-                        id={advert.id}
+                        id={advert?.id}
                         is_buy_advert={is_buy_advert}
                         is_payment_methods_selected={is_payment_methods_selected}
                         selected_methods={selected_methods}
@@ -157,7 +158,7 @@ const QuickAddModal = ({ advert }: TQuickAddModalProps) => {
                     }
                 >
                     <QuickAddModalContent
-                        id={advert.id}
+                        id={advert?.id}
                         is_buy_advert={is_buy_advert}
                         is_payment_methods_selected={is_payment_methods_selected}
                         selected_methods={selected_methods}
