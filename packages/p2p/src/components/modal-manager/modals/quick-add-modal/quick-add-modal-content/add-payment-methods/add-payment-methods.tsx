@@ -34,7 +34,7 @@ const AddPaymentMethods = ({ selected_methods, setSelectedMethods }: TAddPayment
     };
 
     if (should_show_add_payment_method) {
-        return <AddPaymentMethod should_show_page_return={false} should_show_separated_footer={true} />;
+        return <AddPaymentMethod should_show_page_return={false} should_show_separated_footer />;
     }
 
     return (
