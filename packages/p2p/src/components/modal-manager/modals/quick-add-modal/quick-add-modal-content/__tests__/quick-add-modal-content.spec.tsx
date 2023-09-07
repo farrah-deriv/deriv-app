@@ -1,6 +1,7 @@
 import React from 'react';
 import { screen, render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { StoreProvider, mockStore } from '@deriv/stores';
 import { useStores } from 'Stores';
 import QuickAddModalContent from '../quick-add-modal-content';
 
@@ -14,6 +15,16 @@ const content_props = {
     setSelectedMethods: jest.fn(),
     setShouldCloseAllModals: jest.fn(),
 };
+
+const mock_ui_store = mockStore({
+    ui: {
+        is_mobile: false,
+    },
+});
+
+const wrapper = ({ children }: { children: JSX.Element }) => (
+    <StoreProvider store={mock_ui_store}>{children}</StoreProvider>
+);
 
 jest.mock('Stores', () => ({
     ...jest.requireActual('Stores'),
@@ -55,7 +66,7 @@ describe('<QuickAddModalContent />', () => {
     });
 
     it('should render buy advert content if is_buy_advert is true', () => {
-        render(<QuickAddModalContent {...content_props} />);
+        render(<QuickAddModalContent {...content_props} />, { wrapper });
 
         expect(screen.getAllByText('You may choose up to 3 payment methods for this ad.')).toHaveLength(2);
         expect(screen.getAllByText('BuyAdPaymentMethodsList')).toHaveLength(2);
@@ -64,7 +75,7 @@ describe('<QuickAddModalContent />', () => {
     });
 
     it('should call setShouldCloseAllModals if Cancel button is pressed', () => {
-        render(<QuickAddModalContent {...content_props} />);
+        render(<QuickAddModalContent {...content_props} />, { wrapper });
 
         const cancel_button = screen.getByRole('button', { name: 'Cancel' });
         userEvent.click(cancel_button);
@@ -76,7 +87,7 @@ describe('<QuickAddModalContent />', () => {
         mock_store.my_ads_store.payment_method_ids = ['alipay'];
         mock_store.my_ads_store.payment_method_names = ['Alipay'];
 
-        render(<QuickAddModalContent {...content_props} />);
+        render(<QuickAddModalContent {...content_props} />, { wrapper });
 
         const add_button = screen.getByRole('button', { name: 'Add' });
         userEvent.click(add_button);
@@ -86,7 +97,7 @@ describe('<QuickAddModalContent />', () => {
 
     it('should render FilterPaymentMethods if show_filter_payment_methods is true', () => {
         mock_store.my_ads_store.show_filter_payment_methods = true;
-        render(<QuickAddModalContent {...content_props} />);
+        render(<QuickAddModalContent {...content_props} />, { wrapper });
 
         expect(screen.getByText('FilterPaymentMethods')).toBeInTheDocument();
     });
@@ -95,7 +106,7 @@ describe('<QuickAddModalContent />', () => {
         content_props.is_buy_advert = false;
         mock_store.my_ads_store.should_show_add_payment_method = true;
 
-        render(<QuickAddModalContent {...content_props} />);
+        render(<QuickAddModalContent {...content_props} />, { wrapper });
 
         expect(screen.getAllByText('AddPaymentMethod')).toHaveLength(2);
     });
@@ -104,7 +115,7 @@ describe('<QuickAddModalContent />', () => {
         mock_store.my_ads_store.selected_payment_method = ['alipay'];
         mock_store.my_ads_store.payment_method_ids = ['alipay'];
 
-        render(<QuickAddModalContent {...content_props} />);
+        render(<QuickAddModalContent {...content_props} />, { wrapper });
 
         const cancel_button = screen.getByRole('button', { name: 'Cancel' });
         const add_button = screen.getByRole('button', { name: 'Add' });
@@ -119,7 +130,7 @@ describe('<QuickAddModalContent />', () => {
     it('should render only Cancel button selected_payment_method is empty and should_show_add_payment_method is true', () => {
         mock_store.my_ads_store.should_show_add_payment_method = true;
 
-        render(<QuickAddModalContent {...content_props} />);
+        render(<QuickAddModalContent {...content_props} />, { wrapper });
 
         const cancel_button = screen.getByRole('button', { name: 'Cancel' });
 
@@ -129,14 +140,14 @@ describe('<QuickAddModalContent />', () => {
     });
 
     it('should render AddPaymentMethods if is_buy_advert and should_show_add_payment_method are false', () => {
-        render(<QuickAddModalContent {...content_props} />);
+        render(<QuickAddModalContent {...content_props} />, { wrapper });
 
         expect(screen.getAllByText('You may add up to 3 payment methods.')).toHaveLength(2);
         expect(screen.getAllByText('Payment method')).toHaveLength(2);
     });
 
     it('should call setShouldShowAddPaymentMethod if add payment method card is pressed', () => {
-        render(<QuickAddModalContent {...content_props} />);
+        render(<QuickAddModalContent {...content_props} />, { wrapper });
 
         const add_payment_methods = screen.getAllByText('Payment method');
 
@@ -155,7 +166,7 @@ describe('<QuickAddModalContent />', () => {
             },
         ];
 
-        render(<QuickAddModalContent {...content_props} />);
+        render(<QuickAddModalContent {...content_props} />, { wrapper });
 
         const alipay_cards = screen.getAllByText('Alipay');
 
@@ -177,7 +188,7 @@ describe('<QuickAddModalContent />', () => {
 
         mock_store.my_ads_store.payment_method_ids = ['1'];
 
-        render(<QuickAddModalContent {...content_props} />);
+        render(<QuickAddModalContent {...content_props} />, { wrapper });
 
         const alipay_cards = screen.getAllByText('Alipay');
 

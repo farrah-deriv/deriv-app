@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text } from '@deriv/components';
-import { isMobile } from '@deriv/shared';
+import { useStore } from '@deriv/stores';
 import { Localize } from 'Components/i18next';
 import BuyAdPaymentMethodsList from 'Pages/my-ads/buy-ad-payment-methods-list.jsx';
 
@@ -15,10 +15,14 @@ const ChoosePaymentMethods = ({
     selected_methods,
     setSelectedMethods,
 }: TChoosePaymentMethodsProps) => {
+    const {
+        ui: { is_mobile },
+    } = useStore();
+
     return (
         <React.Fragment>
             <div className='quick-add-modal-content__info'>
-                <Text color='prominent' size={isMobile() ? 'xxs' : 'xs'}>
+                <Text color='prominent' size={is_mobile ? 'xxs' : 'xs'}>
                     <Localize i18n_default_text='You may choose up to 3 payment methods for this ad.' />
                 </Text>
             </div>

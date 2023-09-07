@@ -37,7 +37,7 @@ export type TModalManagerContext = {
     stacked_modal?: TModalVariants | null;
     showModal: <T extends TModalKeys>(modal: TModal<T>, options?: TShowModalOptions) => void;
     useRegisterModalProps: <T extends TModalKeys>(modals: TModal<T> | TModalVariants[]) => void;
-    useSavedState: <T>(key: string, default_state: T) => [T, React.Dispatch<React.SetStateAction<string[]>>];
+    useSavedState: <T extends string[]>(key: string, default_state: T) => [T, React.Dispatch<React.SetStateAction<T>>];
 };
 
 export type TShowModalOptions = {

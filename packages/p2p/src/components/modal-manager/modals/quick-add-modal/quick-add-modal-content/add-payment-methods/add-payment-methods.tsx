@@ -1,7 +1,6 @@
 import React from 'react';
 import { Text } from '@deriv/components';
-import { isMobile } from '@deriv/shared';
-import { observer } from '@deriv/stores';
+import { observer, useStore } from '@deriv/stores';
 import { useStores } from 'Stores';
 import { Localize } from 'Components/i18next';
 import AddPaymentMethod from 'Pages/my-profile/payment-methods/add-payment-method/add-payment-method.jsx';
@@ -13,6 +12,9 @@ type TAddPaymentMethodsProps = {
 };
 
 const AddPaymentMethods = ({ selected_methods, setSelectedMethods }: TAddPaymentMethodsProps) => {
+    const {
+        ui: { is_mobile },
+    } = useStore();
     const { my_ads_store } = useStores();
 
     const { payment_method_ids, should_show_add_payment_method, setShouldShowAddPaymentMethod } = my_ads_store;
@@ -37,7 +39,7 @@ const AddPaymentMethods = ({ selected_methods, setSelectedMethods }: TAddPayment
 
     return (
         <React.Fragment>
-            <Text color='prominent' size={isMobile() ? 'xxs' : 'xs'}>
+            <Text color='prominent' size={is_mobile ? 'xxs' : 'xs'}>
                 <Localize i18n_default_text='You may add up to 3 payment methods.' />
             </Text>
             <SellAdPaymentMethodsList

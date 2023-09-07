@@ -20,7 +20,7 @@ type TModalState = {
 };
 
 type TPersistedStates = {
-    [key: string]: any;
+    [key: string]: Record<string, string[]>;
 };
 
 const ModalManagerContextProvider = (props: React.PropsWithChildren<{ mock?: TModalManagerContext }>) => {

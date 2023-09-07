@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button } from '@deriv/components';
 import { observer } from '@deriv/stores';
-import { localize } from 'Components/i18next';
+import { Localize, localize } from 'Components/i18next';
 
 type TQuickAddModalButtonsProps = {
     className?: string;

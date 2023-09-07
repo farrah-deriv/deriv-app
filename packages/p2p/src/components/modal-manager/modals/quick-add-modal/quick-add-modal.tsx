@@ -30,11 +30,9 @@ const QuickAddModal = ({ advert }: TQuickAddModalProps) => {
 
     const { is_modal_open, showModal, useSavedState } = useModalManagerContext();
 
-    const type = advert ? advert.type : null;
-
     const [selected_methods, setSelectedMethods] = useSavedState('selected_methods', []);
 
-    const is_buy_advert = type === buy_sell.BUY;
+    const is_buy_advert = advert?.type === buy_sell.BUY;
     const is_sell_ad_add_payment_methods_selected = !is_buy_advert && selected_payment_method.length > 0;
     const is_buy_ad_add_payment_methods_selected = is_buy_advert && selected_methods.length > 0;
     const is_payment_methods_selected =
