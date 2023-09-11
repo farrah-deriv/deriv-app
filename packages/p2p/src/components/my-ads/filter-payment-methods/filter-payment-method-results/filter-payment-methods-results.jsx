@@ -1,7 +1,7 @@
 import React from 'react';
 import { Loading, RadioGroup, Text } from '@deriv/components';
 import { observer } from '@deriv/stores';
-import { localize } from 'Components/i18next';
+import { Localize } from 'Components/i18next';
 import { useStores } from 'Stores';
 
 const FilterPaymentMethodsResults = observer(({ filtered_payment_methods, setSelectedMethods }) => {
@@ -16,7 +16,7 @@ const FilterPaymentMethodsResults = observer(({ filtered_payment_methods, setSel
     if (my_ads_store.search_term !== '' && my_ads_store.searched_results.length === 0) {
         return (
             <Text align='center' className='filter-payment-methods-results__text' size='xs'>
-                {localize('There are no matching payment methods.')}
+                <Localize i18n_default_text='There are no matching payment methods.' />
             </Text>
         );
     }

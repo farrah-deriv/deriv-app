@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import { Button, DesktopWrapper, MobileWrapper, Modal } from '@deriv/components';
 import { observer } from '@deriv/stores';
 import { useStores } from 'Stores';
-import { localize } from 'Components/i18next';
+import { Localize } from 'Components/i18next';
 import FilterPaymentMethods from 'Components/my-ads/filter-payment-methods';
 
 import AddPaymentMethods from './add-payment-methods';
@@ -96,13 +96,9 @@ const QuickAddModalContent = ({
                 )}
                 {selected_payment_method.length === 0 && should_show_add_payment_method && (
                     <Modal.Footer>
-                        <Button
-                            has_effect
-                            large
-                            onClick={() => setShouldCloseAllModals(false)}
-                            secondary
-                            text={localize('Cancel')}
-                        />
+                        <Button has_effect large onClick={() => setShouldCloseAllModals(false)} secondary>
+                            <Localize i18n_default_text='Cancel' />
+                        </Button>
                     </Modal.Footer>
                 )}
             </DesktopWrapper>
