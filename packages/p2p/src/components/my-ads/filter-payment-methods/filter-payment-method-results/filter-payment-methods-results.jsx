@@ -6,6 +6,8 @@ import { useStores } from 'Stores';
 
 const FilterPaymentMethodsResults = observer(({ filtered_payment_methods, setSelectedMethods }) => {
     const { my_ads_store } = useStores();
+    const data_to_be_mapped =
+        my_ads_store.search_term !== '' ? my_ads_store.searched_results : filtered_payment_methods;
 
     if (my_ads_store.is_searching_payment_method) {
         return <Loading is_fullscreen={false} />;
@@ -30,25 +32,15 @@ const FilterPaymentMethodsResults = observer(({ filtered_payment_methods, setSel
                 selected=''
                 required
             >
-                {my_ads_store.search_term !== ''
-                    ? my_ads_store.searched_results.map((list_item, key) => {
-                          return (
-                              <RadioGroup.Item
-                                  key={key}
-                                  value={list_item.value}
-                                  label={<Text size='xs'>{list_item.text}</Text>}
-                              />
-                          );
-                      })
-                    : filtered_payment_methods.map((list_item, key) => {
-                          return (
-                              <RadioGroup.Item
-                                  key={key}
-                                  value={list_item.value}
-                                  label={<Text size='xs'>{list_item.text}</Text>}
-                              />
-                          );
-                      })}
+                {data_to_be_mapped.map((list_item, key) => {
+                    return (
+                        <RadioGroup.Item
+                            key={key}
+                            value={list_item.value}
+                            label={<Text size='xs'>{list_item.text}</Text>}
+                        />
+                    );
+                })}
             </RadioGroup>
         </div>
     );

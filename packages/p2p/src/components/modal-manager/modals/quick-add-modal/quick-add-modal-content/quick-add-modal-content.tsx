@@ -11,7 +11,7 @@ import ChoosePaymentMethods from './choose-payment-methods';
 import QuickAddModalButtons from '../quick-add-modal-buttons';
 
 type TQuickAddModalContentProps = {
-    id: string | undefined;
+    id?: string;
     is_buy_advert: boolean;
     is_payment_methods_selected: boolean;
     selected_methods: string[];
