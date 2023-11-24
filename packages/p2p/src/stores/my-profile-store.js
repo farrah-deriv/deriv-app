@@ -1,4 +1,4 @@
-import { observable, action, computed, when, makeObservable } from 'mobx';
+import { observable, action, computed, makeObservable } from 'mobx';
 import { requestWS } from 'Utils/websocket';
 import { localize } from 'Components/i18next';
 import { textValidator } from 'Utils/validations';
@@ -12,14 +12,12 @@ export default class MyProfileStore extends BaseStore {
     advertiser_payment_methods = {};
     advertiser_payment_methods_error = '';
     available_payment_methods = {};
-    delete_error_message = '';
     error_message = '';
     form_error = '';
     full_name = '';
     has_more_items_to_load = false;
     is_block_user_table_loading = false;
     is_button_loading = false;
-    is_confirm_delete_modal_open = false;
     is_daily_limit_modal_open = false;
     is_daily_limit_success_modal_open = false;
     is_error_modal_open = false;
@@ -58,14 +56,12 @@ export default class MyProfileStore extends BaseStore {
             advertiser_payment_methods: observable,
             advertiser_payment_methods_error: observable,
             available_payment_methods: observable,
-            delete_error_message: observable,
             error_message: observable,
             form_error: observable,
             full_name: observable,
             has_more_items_to_load: observable,
             is_block_user_table_loading: observable,
             is_button_loading: observable,
-            is_confirm_delete_modal_open: observable,
             is_daily_limit_modal_open: observable,
             is_daily_limit_success_modal_open: observable,
             is_error_modal_open: observable,
@@ -132,7 +128,6 @@ export default class MyProfileStore extends BaseStore {
             setFullName: action.bound,
             setHasMoreItemsToLoad: action.bound,
             setIsBlockUserTableLoading: action.bound,
-            setIsConfirmDeleteModalOpen: action.bound,
             setIsDailyLimitModalOpen: action.bound,
             setIsDailyLimitSuccessModalOpen: action.bound,
             setIsErrorModalOpen: action.bound,
@@ -562,22 +557,19 @@ export default class MyProfileStore extends BaseStore {
     }
 
     onClickDelete() {
+        const { general_store } = this.root_store;
         requestWS({
             p2p_advertiser_payment_methods: 1,
             delete: [this.payment_method_to_delete.ID],
         }).then(async response => {
-            this.setIsConfirmDeleteModalOpen(false);
+            general_store.hideModal();
             if (!response.error) {
                 this.getAdvertiserPaymentMethods();
             } else {
-                this.setDeleteErrorMessage(response.error.message);
-                await when(
-                    () => !this.root_store.general_store.is_modal_open,
-                    () =>
-                        this.root_store.general_store.showModal({
-                            key: 'DeletePaymentMethodErrorModal',
-                        })
-                );
+                general_store.showModal({
+                    key: 'DeletePaymentMethodErrorModal',
+                    error_message: response.error.message,
+                });
             }
         });
     }
@@ -609,7 +601,7 @@ export default class MyProfileStore extends BaseStore {
             this.setShouldShowEditPaymentMethodForm(true);
         } else {
             this.setPaymentMethodToDelete(payment_method);
-            this.setIsConfirmDeleteModalOpen(true);
+            this.root_store.general_store.showModal({ key: 'ConfirmDeletePaymentMethodModal' });
         }
     }
 
@@ -767,10 +759,6 @@ export default class MyProfileStore extends BaseStore {
 
     setIsBlockUserTableLoading(is_block_user_table_loading) {
         this.is_block_user_table_loading = is_block_user_table_loading;
-    }
-
-    setIsConfirmDeleteModalOpen(is_confirm_delete_modal_open) {
-        this.is_confirm_delete_modal_open = is_confirm_delete_modal_open;
     }
 
     setIsDailyLimitModalOpen(is_daily_limit_modal_open) {
