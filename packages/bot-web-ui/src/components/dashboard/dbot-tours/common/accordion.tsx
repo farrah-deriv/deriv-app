@@ -1,8 +1,10 @@
 import React from 'react';
 import classNames from 'classnames';
+
 import { Icon, Text } from '@deriv/components';
 import { localize } from '@deriv/translations';
-import { TStepMobile } from '../config';
+
+import { TStepMobile } from '../tour-content';
 
 type TAccordion = {
     content_data: TStepMobile | null;

@@ -1,11 +1,14 @@
 import React from 'react';
+
 import { observer } from '@deriv/stores';
-import { getSetting } from 'Utils/settings';
+
 import { useDBotStore } from 'Stores/useDBotStore';
+import { getSetting } from 'Utils/settings';
+
 import ReactJoyrideWrapper from '../common/react-joyride-wrapper';
 import TourEndDialog from '../common/tour-end-dialog';
 import TourStartDialog from '../common/tour-start-dialog';
-import { BOT_BUILDER_TOUR } from '../config';
+import { BOT_BUILDER_TOUR } from '../tour-content';
 import { useTourHandler } from '../hooks/useTourHandler';
 
 const BotBuilderTourDesktop = observer(() => {
@@ -18,6 +21,7 @@ const BotBuilderTourDesktop = observer(() => {
     React.useEffect(() => {
         if (is_finished) {
             setTourDialogVisibility(true);
+            setActiveTour('');
         } else if (is_close_tour) {
             setActiveTour('');
             setIsCloseTour(false);

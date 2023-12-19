@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { render, screen } from '@testing-library/react';
-import { idv_error_statuses } from '@deriv/shared';
+import { IDV_ERROR_STATUS } from '@deriv/shared';
 import IdvSubmitComplete from '../idv-submit-complete';
 import { StoreProvider, mockStore } from '@deriv/stores';
 
@@ -85,20 +85,13 @@ describe('<IdvSubmitComplete/>', () => {
     it('should render IdvSubmitComplete component with mismatch_status ', () => {
         const new_store = mockStore({
             client: {
-                account_status: {
-                    authentication: {
-                        attempts: {
-                            count: 2,
-                            history: [{ status: 'pending' }],
-                        },
-                    },
-                },
+                is_already_attempted: true,
             },
         });
 
         const new_props: TIdvSubmitCompleteProps = {
             ...mock_props,
-            mismatch_status: idv_error_statuses.poi_name_dob_mismatch,
+            mismatch_status: IDV_ERROR_STATUS.NameDobMismatch.code,
         };
         renderComponent({ props: new_props, store_config: new_store });
 
@@ -120,20 +113,13 @@ describe('<IdvSubmitComplete/>', () => {
     it('should render IdvSubmitComplete component with mismatch_status', () => {
         const new_store = mockStore({
             client: {
-                account_status: {
-                    authentication: {
-                        attempts: {
-                            count: 2,
-                            history: [{ status: 'pending' }],
-                        },
-                    },
-                },
+                is_already_attempted: true,
             },
         });
 
         const new_props: TIdvSubmitCompleteProps = {
             ...mock_props,
-            mismatch_status: idv_error_statuses.poi_expired,
+            mismatch_status: IDV_ERROR_STATUS.Expired.code,
         };
         renderComponent({ props: new_props, store_config: new_store });
 

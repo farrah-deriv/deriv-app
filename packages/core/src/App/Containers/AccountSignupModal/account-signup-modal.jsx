@@ -1,18 +1,32 @@
-import { Formik, Form } from 'formik';
-import PropTypes from 'prop-types';
 import React from 'react';
-import { getLocation, SessionStore } from '@deriv/shared';
+import { Form, Formik } from 'formik';
+import PropTypes from 'prop-types';
+
 import { Button, Checkbox, Dialog, Loading, Text } from '@deriv/components';
+import { getLocation, SessionStore } from '@deriv/shared';
 import { localize } from '@deriv/translations';
+
 import { WS } from 'Services';
 import { connect } from 'Stores/connect';
+import { Analytics } from '@deriv/analytics';
+
+import CitizenshipForm from '../CitizenshipModal/set-citizenship-form.jsx';
 import PasswordSelectionModal from '../PasswordSelectionModal/password-selection-modal.jsx';
 import ResidenceForm from '../SetResidenceModal/set-residence-form.jsx';
-import CitizenshipForm from '../CitizenshipModal/set-citizenship-form.jsx';
-import 'Sass/app/modules/account-signup.scss';
+
 import validateSignupFields from './validate-signup-fields.jsx';
 
-const AccountSignup = ({ enableApp, is_mobile, isModalVisible, clients_country, onSignup, residence_list }) => {
+import 'Sass/app/modules/account-signup.scss';
+
+const AccountSignup = ({
+    enableApp,
+    is_mobile,
+    isModalVisible,
+    clients_country,
+    onSignup,
+    residence_list,
+    setIsFromSignupAccount,
+}) => {
     const signupInitialValues = { citizenship: '', password: '', residence: '' };
     const [api_error, setApiError] = React.useState(false);
     const [is_loading, setIsLoading] = React.useState(true);
@@ -44,6 +58,16 @@ const AccountSignup = ({ enableApp, is_mobile, isModalVisible, clients_country, 
             }
             setIsLoading(false);
         });
+
+        Analytics.trackEvent('ce_virtual_signup_form', {
+            action: 'signup_confirmed',
+            form_name: is_mobile ? 'virtual_signup_web_mobile_default' : 'virtual_signup_web_desktop_default',
+        });
+
+        Analytics.trackEvent('ce_virtual_signup_form', {
+            action: 'country_selection_screen_opened',
+            form_name: is_mobile ? 'virtual_signup_web_mobile_default' : 'virtual_signup_web_desktop_default',
+        });
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     const validateSignupPassthrough = values => validateSignupFields(values, residence_list);
@@ -67,10 +91,22 @@ const AccountSignup = ({ enableApp, is_mobile, isModalVisible, clients_country, 
     const onSignupComplete = error => {
         if (error) {
             setApiError(error);
+
+            Analytics.trackEvent('ce_virtual_signup_form', {
+                action: 'signup_flow_error',
+                form_name: is_mobile ? 'virtual_signup_web_mobile_default' : 'virtual_signup_web_desktop_default',
+                error_message: error,
+            });
         } else {
             isModalVisible(false);
+            setIsFromSignupAccount(true);
             SessionStore.remove('signup_query_param');
             enableApp();
+
+            Analytics.trackEvent('ce_virtual_signup_form', {
+                action: 'signup_done',
+                form_name: is_mobile ? 'virtual_signup_web_mobile_default' : 'virtual_signup_web_desktop_default',
+            });
         }
     };
 
@@ -181,6 +217,7 @@ AccountSignup.propTypes = {
     residence_list: PropTypes.array,
     is_mobile: PropTypes.bool,
     isModalVisible: PropTypes.func,
+    setIsFromSignupAccount: PropTypes.func,
 };
 
 const AccountSignupModal = ({
@@ -195,6 +232,7 @@ const AccountSignupModal = ({
     onSignup,
     residence_list,
     toggleAccountSignupModal,
+    setIsFromSignupAccount,
 }) => {
     React.useEffect(() => {
         // a logged in user should not be able to create a new account
@@ -219,6 +257,7 @@ const AccountSignupModal = ({
                 is_mobile={is_mobile}
                 isModalVisible={toggleAccountSignupModal}
                 enableApp={enableApp}
+                setIsFromSignupAccount={setIsFromSignupAccount}
             />
         </Dialog>
     );
@@ -236,6 +275,7 @@ AccountSignupModal.propTypes = {
     onSignup: PropTypes.func,
     residence_list: PropTypes.arrayOf(PropTypes.object),
     toggleAccountSignupModal: PropTypes.func,
+    setIsFromSignupAccount: PropTypes.func,
 };
 
 export default connect(({ ui, client }) => ({
@@ -250,4 +290,5 @@ export default connect(({ ui, client }) => ({
     residence_list: client.residence_list,
     clients_country: client.clients_country,
     logout: client.logout,
+    setIsFromSignupAccount: ui.setIsFromSignupAccount,
 }))(AccountSignupModal);

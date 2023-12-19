@@ -7,7 +7,8 @@ import { isDesktop, isMobile } from '@deriv/shared';
 import { splitValidationResultTypes } from '../../real-account-signup/helpers/utils';
 import PersonalDetails from '../personal-details';
 import { shouldShowIdentityInformation, isDocumentTypeValid, isAdditionalDocumentValid } from 'Helpers/utils';
-import { StoreProvider, mockStore } from '@deriv/stores';
+import { StoreProvider, mockStore, ExchangeRatesProvider } from '@deriv/stores';
+import { Analytics } from '@deriv/analytics';
 
 jest.mock('Assets/ic-poi-name-dob-example.svg', () => jest.fn(() => 'PoiNameDobExampleImage'));
 
@@ -69,17 +70,25 @@ const runCommonFormfieldsTests = is_svg => {
     expect(screen.queryByTestId('tax_residence')).toBeInTheDocument();
     expect(screen.queryByTestId('tax_residence_mobile')).not.toBeInTheDocument();
 
-    expect(
-        screen.getByText(/Please enter your first name as in your official identity documents./i)
-    ).toBeInTheDocument();
+    if (is_svg) {
+        expect(screen.getByText(/your first name as in your identity document/i)).toBeInTheDocument();
 
-    expect(
-        screen.getByText(/Please enter your last name as in your official identity documents./i)
-    ).toBeInTheDocument();
+        expect(screen.getByText(/your last name as in your identity document/i)).toBeInTheDocument();
 
-    expect(
-        screen.getByText(/Please enter your date of birth as in your official identity documents./i)
-    ).toBeInTheDocument();
+        expect(screen.getByText(/your date of birth as in your identity document/i)).toBeInTheDocument();
+    } else {
+        expect(
+            screen.getByText(/Please enter your first name as in your official identity documents./i)
+        ).toBeInTheDocument();
+
+        expect(
+            screen.getByText(/Please enter your last name as in your official identity documents./i)
+        ).toBeInTheDocument();
+
+        expect(
+            screen.getByText(/Please enter your date of birth as in your official identity documents./i)
+        ).toBeInTheDocument();
+    }
 
     const tax_residence_pop_over = screen.queryByTestId('tax_residence_pop_over');
     expect(tax_residence_pop_over).toBeInTheDocument();
@@ -107,7 +116,7 @@ const runCommonFormfieldsTests = is_svg => {
                 name: /additional information/i,
             })
         ).toBeInTheDocument();
-    expect(screen.queryByTestId('dti_dropdown_display')).toBeInTheDocument();
+    expect(screen.queryByTestId('dt_dropdown_display')).toBeInTheDocument();
     expect(screen.queryByTestId('account_opening_reason_mobile')).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: /previous/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /next/i })).toBeInTheDocument();
@@ -269,7 +278,9 @@ describe('<PersonalDetails/>', () => {
         account_settings: {},
     };
 
-    beforeAll(() => (ReactDOM.createPortal = jest.fn(component => component)));
+    beforeAll(() => {
+        ReactDOM.createPortal = jest.fn(component => component);
+    });
 
     afterAll(() => ReactDOM.createPortal.mockClear());
 
@@ -277,14 +288,21 @@ describe('<PersonalDetails/>', () => {
         jest.clearAllMocks();
     });
 
-    const renderwithRouter = component => {
-        const mock_store = mockStore({});
+    const renderwithRouter = (component, store) => {
+        let mock_store = mockStore({});
         render(
-            <StoreProvider store={mock_store}>
-                <BrowserRouter>{component}</BrowserRouter>
+            <StoreProvider store={store ?? mock_store}>
+                <ExchangeRatesProvider>
+                    <BrowserRouter>{component}</BrowserRouter>
+                </ExchangeRatesProvider>
             </StoreProvider>
         );
     };
+
+    it('should have called trackEvent on mount', () => {
+        renderwithRouter(<PersonalDetails {...props} />);
+        expect(Analytics.trackEvent).toHaveBeenCalledTimes(1);
+    });
 
     it('should have validation errors on form fields', async () => {
         isMobile.mockReturnValue(false);
@@ -344,7 +362,6 @@ describe('<PersonalDetails/>', () => {
     it('submit button should be enabled if TIN or tax_residence is optional in case of CR accounts', () => {
         const new_props = {
             ...props,
-            is_mf: false,
             is_svg: true,
             value: {
                 first_name: '',
@@ -419,7 +436,6 @@ describe('<PersonalDetails/>', () => {
         const new_props = {
             ...props,
             is_svg: false,
-            is_mf: true,
             value: {
                 ...props.value,
                 tax_residence: 'Malta',
@@ -465,7 +481,12 @@ describe('<PersonalDetails/>', () => {
     });
 
     it('should show title and Name label when salutation is passed', () => {
-        renderwithRouter(<PersonalDetails {...props} />);
+        const mock_store = mockStore({
+            traders_hub: {
+                is_eu_user: true,
+            },
+        });
+        renderwithRouter(<PersonalDetails {...props} />, mock_store);
 
         expect(
             screen.getByRole('heading', {
@@ -478,7 +499,7 @@ describe('<PersonalDetails/>', () => {
         const newprops = { ...props, value: {} };
         renderwithRouter(<PersonalDetails {...newprops} />);
 
-        expect(screen.getByRole('heading', { name: /name/i })).toBeInTheDocument();
+        expect(screen.getByRole('heading', { name: /details/i })).toBeInTheDocument();
         expect(screen.queryByRole('heading', { name: /title and name/i })).not.toBeInTheDocument();
     });
 
@@ -511,27 +532,30 @@ describe('<PersonalDetails/>', () => {
     it('should display the correct field details when is_svg is true ', () => {
         renderwithRouter(<PersonalDetails {...props} />);
 
-        expect(screen.getByRole('heading', { name: /title and name/i })).toBeInTheDocument();
-        expect(screen.queryByRole('heading', { name: 'name' })).not.toBeInTheDocument();
+        expect(screen.queryByRole('heading', { name: 'Details' })).toBeInTheDocument();
         expect(screen.getByText(/first name\*/i)).toBeInTheDocument();
         expect(screen.getByText(/last name\*/i)).toBeInTheDocument();
         expect(screen.getByText(/date of birth\*/i)).toBeInTheDocument();
         expect(screen.getByText(/phone number\*/i)).toBeInTheDocument();
-        expect(screen.getByLabelText(/phone number\*/i)).toBeInTheDocument();
 
         runCommonFormfieldsTests(props.is_svg);
     });
 
     it('should display the correct field details when is_svg is false ', () => {
-        renderwithRouter(<PersonalDetails {...props} is_svg={false} />);
+        const mock_store = mockStore({
+            traders_hub: {
+                is_eu_user: true,
+            },
+        });
+        renderwithRouter(<PersonalDetails {...props} is_svg={false} />, mock_store);
 
         expect(screen.getByRole('heading', { name: 'Title and name' })).toBeInTheDocument();
         expect(screen.queryByRole('heading', { name: 'name' })).not.toBeInTheDocument();
         expect(screen.getByRole('heading', { name: /other details/i })).toBeInTheDocument();
-        expect(screen.getByText('First name')).toBeInTheDocument();
-        expect(screen.getByText('Last name')).toBeInTheDocument();
-        expect(screen.getByText('Date of birth')).toBeInTheDocument();
-        expect(screen.getByText('Phone number*')).toBeInTheDocument();
+        expect(screen.getByText(/first name\*/i)).toBeInTheDocument();
+        expect(screen.getByText(/last name\*/i)).toBeInTheDocument();
+        expect(screen.getByText(/date of birth\*/i)).toBeInTheDocument();
+        expect(screen.getByText(/phone number\*/i)).toBeInTheDocument();
         expect(screen.getByLabelText('Phone number*')).toBeInTheDocument();
 
         runCommonFormfieldsTests(false);
@@ -586,7 +610,7 @@ describe('<PersonalDetails/>', () => {
         expect(screen.getByText(/tax identification number/i)).toBeInTheDocument();
         expect(screen.getByLabelText(/tax identification number/i)).toBeInTheDocument();
         expect(screen.getByRole('heading', { name: /account opening reason/i })).toBeInTheDocument();
-        expect(screen.queryByTestId('dti_dropdown_display')).not.toBeInTheDocument();
+        expect(screen.queryByTestId('dt_dropdown_display')).not.toBeInTheDocument();
         expect(screen.queryByTestId('account_opening_reason_mobile')).toBeInTheDocument();
         expect(screen.getByRole('button', { name: /previous/i })).toBeInTheDocument();
         expect(screen.getByRole('button', { name: /next/i })).toBeInTheDocument();
@@ -825,7 +849,6 @@ describe('<PersonalDetails/>', () => {
         shouldShowIdentityInformation.mockReturnValue(true);
         const new_props = {
             ...props,
-            is_mf: false,
             value: {
                 ...props.value,
                 ...idv_document_data,
@@ -850,7 +873,6 @@ describe('<PersonalDetails/>', () => {
 
         const new_props = {
             ...props,
-            is_mf: false,
             value: {
                 ...props.value,
                 ...new_document_data,
@@ -869,7 +891,6 @@ describe('<PersonalDetails/>', () => {
         isDesktop.mockReturnValue(true);
         const new_props = {
             ...props,
-            is_mf: true,
             value: {
                 ...props.value,
                 tax_residence: 'France',
