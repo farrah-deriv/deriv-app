@@ -104,10 +104,10 @@ const AppContent = ({ order_id }) => {
                 <TemporarilyBarredHint />
             </div>
             <div data-count={notification_count} label={localize('Orders')} />
-            <div label={localize('My ads')}>
+            <div label={localize('My Ads')}>
                 <TemporarilyBarredHint />
             </div>
-            <div label={localize('My profile')} />
+            <div label={localize('My Profile')} />
         </Tabs>
     );
 };
